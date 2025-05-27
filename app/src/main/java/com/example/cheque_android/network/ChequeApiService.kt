@@ -1,5 +1,6 @@
 package com.example.cheque_android.network
 
+import com.example.cheque_android.data.Account
 import com.example.cheque_android.data.User
 import com.example.cheque_android.data.response.TokenResponse
 import retrofit2.Response
@@ -13,8 +14,8 @@ interface ChequeApiService {
     @POST("auth/register")
     suspend fun signup(@Body user: User): Response<TokenResponse>
 
-//    @GET("accounts/my")
-//    suspend fun getMyAccount():
+    @GET("accounts/my")
+    suspend fun getMyAccount(): Response<List<Account>>
 
 
 //    @PUT(Constants.depositEndpoint)

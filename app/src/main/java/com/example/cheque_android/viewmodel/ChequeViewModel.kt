@@ -1,5 +1,6 @@
 package com.example.cheque_android.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,6 +25,18 @@ class ChequeViewModel : ViewModel() {
                 token = response.body()
             } catch (e: Exception) {
                 println("Error $e")
+            }
+
+        }
+    }
+
+    fun getMyAccount() {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getMyAccount()
+                Log.e("myapi",response.isSuccessful.toString())
+            } catch (e: Exception) {
+                Log.e("myapi", e.message.toString())
             }
 
         }

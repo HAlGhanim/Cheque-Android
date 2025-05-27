@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.cheque_android.ui.theme.ChequeAndroidTheme
+import com.example.cheque_android.viewmodel.ChequeViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,6 +21,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChequeAndroidTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    y()
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
@@ -28,6 +30,11 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+fun y(){
+    var t = ChequeViewModel()
+    t.getMyAccount()
 }
 
 @Composable
