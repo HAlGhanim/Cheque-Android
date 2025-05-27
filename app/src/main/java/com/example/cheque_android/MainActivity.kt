@@ -1,5 +1,6 @@
 package com.example.cheque_android
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChequeAndroidTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    y()
+                    y(this)
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
@@ -32,10 +33,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun y(){
-    var t = ChequeViewModel()
-    t.getMyAccount()
+fun y(context: Context) {
+    val viewModel = ChequeViewModel(context)
+    viewModel.getMyAccount()
 }
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {

@@ -14,6 +14,10 @@ interface ChequeApiService {
     @POST("auth/register")
     suspend fun signup(@Body user: User): Response<TokenResponse>
 
+    @POST("auth/login")
+    suspend fun login(@Body user: User): Response<TokenResponse>
+
+
     @GET("accounts/my")
     suspend fun getMyAccount(): Response<List<Account>>
 
