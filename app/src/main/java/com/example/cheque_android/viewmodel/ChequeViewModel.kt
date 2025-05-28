@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cheque_android.data.Role
 import com.example.cheque_android.data.User
 import com.example.cheque_android.data.response.TokenResponse
 import com.example.cheque_android.network.ChequeApiService
@@ -19,29 +18,14 @@ class ChequeViewModel(private val context: Context) : ViewModel() {
     private val apiService = RetrofitHelper.getInstance(context).create(ChequeApiService::class.java)
     var token: TokenResponse? by mutableStateOf(null)
 
-    fun signup(username: String, password: String, role: Role) {
-        viewModelScope.launch {
-            try {
-                val response = apiService.signup(User(username, password, role, null))
-                if (response.isSuccessful) {
-                    token = response.body()
-                    token?.token?.let {
-                        TokenManager.saveToken(context, it)
-                        Log.d("Signup", "Token saved")
-                    }
-                } else {
-                    Log.e("Signup", "Failed: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("Signup", "Error: ${e.message}")
-            }
-        }
+    fun loadStoredToken() {
+        token = TokenResponse(TokenManager.getToken(context))
     }
 
-    fun login(username: String, password: String, role: Role) {
+    fun login(username: String, password: String) {
         viewModelScope.launch {
             try {
-                val response = apiService.login(User(username, password, role, null))
+                val response = apiService.login(User(username, password))
                 if (response.isSuccessful) {
                     token = response.body()
                     token?.token?.let {
@@ -62,7 +46,6 @@ class ChequeViewModel(private val context: Context) : ViewModel() {
         token = null
         Log.d("Logout", "Token cleared")
     }
-
 
     fun getMyAccount() {
         viewModelScope.launch {

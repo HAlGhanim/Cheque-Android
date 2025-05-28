@@ -1,56 +1,47 @@
 package com.example.cheque_android
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.cheque_android.navigation.AppNavigation
 import com.example.cheque_android.ui.theme.ChequeAndroidTheme
 import com.example.cheque_android.viewmodel.ChequeViewModel
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("CoroutineCreationDuringComposition", "ViewModelConstructorInComposable")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ChequeAndroidTheme {
+                val navController = rememberNavController()
+                val viewModel = ChequeViewModel(this)
+                viewModel.loadStoredToken()
+
+                if (!viewModel.token?.token.isNullOrBlank()) {
+                    MainScope().launch {
+                        navController.navigate("home") {
+                            popUpTo(0)
+                        }
+                    }
+                }
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    y(this)
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        AppNavigation(navController = navController, viewModel = viewModel)
+                    }
                 }
             }
         }
-    }
-}
-
-fun y(context: Context) {
-    val viewModel = ChequeViewModel(context)
-    viewModel.getMyAccount()
-}
-
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ChequeAndroidTheme {
-        Greeting("Android")
     }
 }
