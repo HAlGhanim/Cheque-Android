@@ -18,6 +18,10 @@ class ChequeViewModel(private val context: Context) : ViewModel() {
     private val apiService = RetrofitHelper.getInstance(context).create(ChequeApiService::class.java)
     var token: TokenResponse? by mutableStateOf(null)
 
+    init {
+        loadStoredToken()
+    }
+
     fun loadStoredToken() {
         token = TokenResponse(TokenManager.getToken(context))
     }

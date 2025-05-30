@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.cheque_android.navigation.AppNavigation
@@ -26,10 +27,9 @@ class MainActivity : ComponentActivity() {
             ChequeAndroidTheme {
                 val navController = rememberNavController()
                 val viewModel = ChequeViewModel(this)
-                viewModel.loadStoredToken()
 
-                if (!viewModel.token?.token.isNullOrBlank()) {
-                    MainScope().launch {
+                LaunchedEffect(viewModel.token) {
+                    if (!viewModel.token?.token.isNullOrBlank()) {
                         navController.navigate("home") {
                             popUpTo(0)
                         }
