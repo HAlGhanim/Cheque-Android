@@ -9,19 +9,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.cheque_android.data.Role
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 
 @Composable
 fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
     val context = LocalContext.current
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val token = viewModel.token
+    var username by remember { mutableStateOf("HAlGhanim8@gmail.com") }
+    var password by remember { mutableStateOf("123456") }
 
-    LaunchedEffect(token) {
-        if (!token?.token.isNullOrBlank()) {
-            navController.navigate(Screen.Home.route) {
+    LaunchedEffect(viewModel.token) {
+        if (!viewModel.token?.token.isNullOrBlank()) {
+            val route = if (viewModel.user?.role == Role.ADMIN) {
+                Screen.AdminDashboard.route
+            } else {
+                Screen.Home.route
+            }
+            navController.navigate(route) {
                 popUpTo(Screen.Login.route) { inclusive = true }
             }
         }
@@ -57,9 +62,16 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = {
-            viewModel.login(username, password)
-        }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = {
+                viewModel.login(username, password) { route ->
+                    navController.navigate(route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Login")
         }
     }
