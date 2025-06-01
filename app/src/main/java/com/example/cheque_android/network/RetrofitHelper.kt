@@ -2,6 +2,7 @@ package com.example.cheque_android.network
 
 import android.content.Context
 import com.example.cheque_android.utils.TokenManager
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,6 +17,10 @@ object RetrofitHelper {
                 TokenManager.getToken(context)
             })
             .build()
+
+        val gson = GsonBuilder()
+            .setLenient() // Allow parsing of malformed JSON
+            .create()
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)

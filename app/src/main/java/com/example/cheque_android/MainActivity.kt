@@ -15,8 +15,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.cheque_android.navigation.AppNavigation
 import com.example.cheque_android.ui.theme.ChequeAndroidTheme
 import com.example.cheque_android.viewmodel.ChequeViewModel
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("CoroutineCreationDuringComposition", "ViewModelConstructorInComposable")

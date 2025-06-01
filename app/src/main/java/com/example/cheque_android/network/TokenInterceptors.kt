@@ -9,10 +9,16 @@ class TokenInterceptor(private val tokenProvider: () -> String?) : Interceptor {
         val originalRequest = chain.request()
         val token = tokenProvider()
         val newRequest = if (!token.isNullOrBlank()) {
+            Log.d("Interceptor", "Original request: ${originalRequest.url}")
+            Log.d("Interceptor", "Token from TokenManager: $token")
+
             originalRequest.newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()
         } else {
+            Log.d("Interceptor", "Original request: ${originalRequest.url}")
+            Log.d("Interceptor", "Token from TokenManager: $token")
+
             originalRequest
         }
         val response = chain.proceed(newRequest)
