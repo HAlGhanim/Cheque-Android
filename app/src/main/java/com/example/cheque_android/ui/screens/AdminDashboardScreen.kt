@@ -18,6 +18,7 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
+        viewModel.clearErrorMessage()
         viewModel.fetchDashboardStats()
     }
 
@@ -29,7 +30,7 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
                 Divider()
                 NavigationDrawerItem(
                     label = { Text("Dashboard") },
-                    selected = false,
+                    selected = true,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminDashboard.route)
@@ -128,18 +129,42 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
             ) {
                 Text("Admin Dashboard", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
-
+                viewModel.errorMessage?.let { message ->
+                    Text(
+                        text = message,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
                 viewModel.dashboardStats?.let { stats ->
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Total Users: ${stats.totalUsers}")
-                            Text("Total Transactions: ${stats.totalTransactions}")
-                            Text("Growth Percentage: ${stats.growthPercentage}%")
-                            Text("Last Updated: ${stats.lastUpdated}")
+                            StatRow("Total Users", stats.totalUsers.toString())
+                            StatRow("Total Transactions", stats.totalTransactions.toString())
+                            StatRow("Growth Percentage", "${stats.growthPercentage}%")
+                            StatRow("Last Updated", stats.lastUpdated.toString())
                         }
                     }
+                } ?: run {
+                    Text("Loading dashboard stats...", style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun StatRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyLarge)
+        Text(value, style = MaterialTheme.typography.bodyLarge)
     }
 }

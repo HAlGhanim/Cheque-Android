@@ -1,28 +1,27 @@
 package com.example.cheque_android.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.cheque_android.data.AccountResponse
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController) {
+fun AdminRedeemScreen(viewModel: ChequeViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var amount by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.clearErrorMessage()
-        viewModel.fetchAccounts()
+        viewModel.fetchActiveCodeCount()
     }
 
     ModalNavigationDrawer(
@@ -49,7 +48,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                 )
                 NavigationDrawerItem(
                     label = { Text("Accounts") },
-                    selected = true,
+                    selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminAccounts.route)
@@ -89,7 +88,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                 )
                 NavigationDrawerItem(
                     label = { Text("Redeem Codes") },
-                    selected = false,
+                    selected = true,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminRedeem.route)
@@ -112,7 +111,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Accounts Management") },
+                    title = { Text("Redeem Codes Management") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -130,43 +129,44 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Accounts Management", style = MaterialTheme.typography.headlineMedium)
+                Text("Redeem Codes Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 viewModel.errorMessage?.let { message ->
                     Text(
                         text = message,
-                        color = MaterialTheme.colorScheme.error,
+                        color = if (message.contains("successfully")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.accounts.isEmpty()) {
-                    Text("No accounts found", style = MaterialTheme.typography.bodyLarge)
-                } else {
-                    LazyColumn {
-                        items(viewModel.accounts) { account ->
-                            AccountCard(account)
+                Text("Active Codes: ${viewModel.activeCodeCount ?: 0}", style = MaterialTheme.typography.bodyLarge)
+                Spacer(modifier = Modifier.height(16.dp))
+                viewModel.generatedCode?.let { code ->
+                    Text("Last Generated Code: ${code["code"]}", style = MaterialTheme.typography.bodyLarge)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = { amount = it },
+                    label = { Text("Amount") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        val amountBigDecimal = amount.toDoubleOrNull()?.let { BigDecimal(it) } ?: BigDecimal.ZERO
+                        if (amountBigDecimal > BigDecimal.ZERO) {
+                            viewModel.generateRedeemCode(amountBigDecimal)
+                            amount = ""
+                        } else {
+                            viewModel.errorMessage = "Please enter a valid amount"
                         }
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = amount.isNotBlank()
+                ) {
+                    Text("Generate Redeem Code")
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun AccountCard(account: AccountResponse) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Account: ${account.accountNumber}", style = MaterialTheme.typography.bodyLarge)
-            Text("User ID: ${account.userId}", style = MaterialTheme.typography.bodyMedium)
-            Text("Balance: $${account.balance}", style = MaterialTheme.typography.bodyMedium)
-            Text("Type: ${account.accountType}", style = MaterialTheme.typography.bodyMedium)
-            Text("Created: ${account.createdAt}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

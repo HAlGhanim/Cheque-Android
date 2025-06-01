@@ -9,5 +9,5 @@ data class AccountResponse(
     val balance: BigDecimal,
     val spendingLimit: Int?,
     val accountType: String,
-    val createdAt: LocalDateTime
+    val createdAt: String
 )

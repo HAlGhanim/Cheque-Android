@@ -12,9 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.cheque_android.data.Role
 import com.example.cheque_android.navigation.AppNavigation
-import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.ui.theme.ChequeAndroidTheme
 import com.example.cheque_android.viewmodel.ChequeViewModel
 
@@ -28,14 +26,9 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val viewModel = ChequeViewModel(this)
 
-                LaunchedEffect(viewModel.token, viewModel.user) {
+                LaunchedEffect(viewModel.token) {
                     if (!viewModel.token?.token.isNullOrBlank()) {
-                        val route = if (viewModel.user?.role == Role.ADMIN) {
-                            Screen.AdminDashboard.route
-                        } else {
-                            Screen.Home.route
-                        }
-                        navController.navigate(route) {
+                        navController.navigate("home") {
                             popUpTo(0)
                         }
                     }

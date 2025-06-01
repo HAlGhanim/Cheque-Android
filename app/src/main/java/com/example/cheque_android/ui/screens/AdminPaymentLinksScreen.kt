@@ -9,20 +9,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.cheque_android.data.AccountResponse
+import com.example.cheque_android.data.response.PaymentLinkResponse
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController) {
+fun AdminPaymentLinksScreen(viewModel: ChequeViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.clearErrorMessage()
-        viewModel.fetchAccounts()
+        viewModel.fetchPaymentLinks()
     }
 
     ModalNavigationDrawer(
@@ -49,7 +49,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                 )
                 NavigationDrawerItem(
                     label = { Text("Accounts") },
-                    selected = true,
+                    selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminAccounts.route)
@@ -73,7 +73,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                 )
                 NavigationDrawerItem(
                     label = { Text("Payment Links") },
-                    selected = false,
+                    selected = true,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminPaymentLinks.route)
@@ -112,7 +112,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Accounts Management") },
+                    title = { Text("Payment Links Management") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -130,21 +130,21 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Accounts Management", style = MaterialTheme.typography.headlineMedium)
+                Text("Payment Links Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 viewModel.errorMessage?.let { message ->
                     Text(
                         text = message,
-                        color = MaterialTheme.colorScheme.error,
+                        color = if (message.contains("successfully")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.accounts.isEmpty()) {
-                    Text("No accounts found", style = MaterialTheme.typography.bodyLarge)
+                if (viewModel.paymentLinks.isEmpty()) {
+                    Text("No payment links found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.accounts) { account ->
-                            AccountCard(account)
+                        items(viewModel.paymentLinks) { link ->
+                            PaymentLinkCard(link, viewModel)
                         }
                     }
                 }
@@ -154,7 +154,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
 }
 
 @Composable
-fun AccountCard(account: AccountResponse) {
+fun PaymentLinkCard(link: PaymentLinkResponse, viewModel: ChequeViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,11 +162,18 @@ fun AccountCard(account: AccountResponse) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Account: ${account.accountNumber}", style = MaterialTheme.typography.bodyLarge)
-            Text("User ID: ${account.userId}", style = MaterialTheme.typography.bodyMedium)
-            Text("Balance: $${account.balance}", style = MaterialTheme.typography.bodyMedium)
-            Text("Type: ${account.accountType}", style = MaterialTheme.typography.bodyMedium)
-            Text("Created: ${account.createdAt}", style = MaterialTheme.typography.bodyMedium)
+            Text("UUID: ${link.uuid}", style = MaterialTheme.typography.bodyLarge)
+            Text("Amount: $${link.amount}", style = MaterialTheme.typography.bodyMedium)
+            Text("Account: ${link.accountNumber}", style = MaterialTheme.typography.bodyMedium)
+            Text("Description: ${link.description}", style = MaterialTheme.typography.bodyMedium)
+            Text("Status: ${link.status}", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = { viewModel.deletePaymentLink(link.id) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Delete")
+            }
         }
     }
 }

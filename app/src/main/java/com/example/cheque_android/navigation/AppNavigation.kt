@@ -6,6 +6,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.cheque_android.ui.screens.AdminAccountsScreen
 import com.example.cheque_android.ui.screens.AdminDashboardScreen
+import com.example.cheque_android.ui.screens.AdminKYCScreen
+import com.example.cheque_android.ui.screens.AdminPaymentLinksScreen
+import com.example.cheque_android.ui.screens.AdminRedeemScreen
+import com.example.cheque_android.ui.screens.AdminTransactionsScreen
+import com.example.cheque_android.ui.screens.AdminTransfersScreen
 import com.example.cheque_android.ui.screens.AdminUsersScreen
 import com.example.cheque_android.ui.screens.HomeScreen
 import com.example.cheque_android.ui.screens.LoginScreen
@@ -44,6 +49,5 @@ fun AppNavigation(navController: NavHostController, viewModel: ChequeViewModel) 
         composable(Screen.AdminRedeem.route) {
             AdminRedeemScreen(viewModel = viewModel, navController = navController)
         }
-
     }
 }

@@ -9,20 +9,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.cheque_android.data.AccountResponse
+import com.example.cheque_android.data.KYC
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController) {
+fun AdminKYCScreen(viewModel: ChequeViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.clearErrorMessage()
-        viewModel.fetchAccounts()
+        viewModel.fetchKYC()
     }
 
     ModalNavigationDrawer(
@@ -49,7 +49,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                 )
                 NavigationDrawerItem(
                     label = { Text("Accounts") },
-                    selected = true,
+                    selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminAccounts.route)
@@ -81,7 +81,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                 )
                 NavigationDrawerItem(
                     label = { Text("KYC") },
-                    selected = false,
+                    selected = true,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminKYC.route)
@@ -112,7 +112,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Accounts Management") },
+                    title = { Text("KYC Management") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -130,7 +130,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Accounts Management", style = MaterialTheme.typography.headlineMedium)
+                Text("KYC Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 viewModel.errorMessage?.let { message ->
                     Text(
@@ -139,12 +139,12 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.accounts.isEmpty()) {
-                    Text("No accounts found", style = MaterialTheme.typography.bodyLarge)
+                if (viewModel.kycRecords.isEmpty()) {
+                    Text("No KYC records found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.accounts) { account ->
-                            AccountCard(account)
+                        items(viewModel.kycRecords) { kyc ->
+                            KYCCard(kyc)
                         }
                     }
                 }
@@ -154,7 +154,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
 }
 
 @Composable
-fun AccountCard(account: AccountResponse) {
+fun KYCCard(kyc: KYC) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,11 +162,10 @@ fun AccountCard(account: AccountResponse) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Account: ${account.accountNumber}", style = MaterialTheme.typography.bodyLarge)
-            Text("User ID: ${account.userId}", style = MaterialTheme.typography.bodyMedium)
-            Text("Balance: $${account.balance}", style = MaterialTheme.typography.bodyMedium)
-            Text("Type: ${account.accountType}", style = MaterialTheme.typography.bodyMedium)
-            Text("Created: ${account.createdAt}", style = MaterialTheme.typography.bodyMedium)
+            Text("ID: ${kyc.id}", style = MaterialTheme.typography.bodyLarge)
+            Text("Name: ${kyc.name}", style = MaterialTheme.typography.bodyMedium)
+            Text("Phone: ${kyc.phone ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
+            Text("User: ${kyc.user?.email ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

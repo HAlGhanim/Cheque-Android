@@ -8,5 +8,5 @@ data class TransactionResponse(
     val senderAccountNumber: String,
     val receiverAccountNumber: String,
     val amount: BigDecimal,
-    val createdAt: LocalDateTime
+    val createdAt: String
 )

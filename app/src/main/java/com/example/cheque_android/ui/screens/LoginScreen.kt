@@ -16,7 +16,7 @@ import com.example.cheque_android.viewmodel.ChequeViewModel
 @Composable
 fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
     val context = LocalContext.current
-    var username by remember { mutableStateOf("HAlGhanim8@gmail.com") }
+    var username by remember { mutableStateOf("KAlGhanim8@gmail.com") }
     var password by remember { mutableStateOf("123456") }
 
     LaunchedEffect(viewModel.token) {
@@ -24,7 +24,8 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
             val route = if (viewModel.user?.role == Role.ADMIN) {
                 Screen.AdminDashboard.route
             } else {
-                Screen.Home.route
+                viewModel.errorMessage = "Access denied: Admins only"
+                Screen.Login.route
             }
             navController.navigate(route) {
                 popUpTo(Screen.Login.route) { inclusive = true }
@@ -39,19 +40,22 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Login", style = MaterialTheme.typography.headlineMedium)
-
+        Text("Admin Login", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(24.dp))
-
+        viewModel.errorMessage?.let { message ->
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -59,9 +63,7 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(24.dp))
-
         Button(
             onClick = {
                 viewModel.login(username, password) { route ->

@@ -12,5 +12,5 @@ data class TransferResponse(
     val amount: BigDecimal,
     val transactionId: Long,
     val description: String,
-    val createdAt: LocalDateTime
+    val createdAt: String
 )

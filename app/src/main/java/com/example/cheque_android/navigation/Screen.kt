@@ -13,4 +13,3 @@ sealed class Screen(val route: String) {
     object AdminRedeem : Screen("admin_redeem")
 }
 
-

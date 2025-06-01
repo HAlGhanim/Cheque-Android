@@ -9,20 +9,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.cheque_android.data.AccountResponse
+import com.example.cheque_android.data.response.TransferResponse
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController) {
+fun AdminTransfersScreen(viewModel: ChequeViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.clearErrorMessage()
-        viewModel.fetchAccounts()
+        viewModel.fetchTransfers()
     }
 
     ModalNavigationDrawer(
@@ -49,7 +49,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                 )
                 NavigationDrawerItem(
                     label = { Text("Accounts") },
-                    selected = true,
+                    selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminAccounts.route)
@@ -65,7 +65,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                 )
                 NavigationDrawerItem(
                     label = { Text("Transfers") },
-                    selected = false,
+                    selected = true,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.AdminTransfers.route)
@@ -112,7 +112,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Accounts Management") },
+                    title = { Text("Transfers Management") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -130,7 +130,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Accounts Management", style = MaterialTheme.typography.headlineMedium)
+                Text("Transfers Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 viewModel.errorMessage?.let { message ->
                     Text(
@@ -139,12 +139,12 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.accounts.isEmpty()) {
-                    Text("No accounts found", style = MaterialTheme.typography.bodyLarge)
+                if (viewModel.transfers.isEmpty()) {
+                    Text("No transfers found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.accounts) { account ->
-                            AccountCard(account)
+                        items(viewModel.transfers) { transfer ->
+                            TransferCard(transfer)
                         }
                     }
                 }
@@ -154,7 +154,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
 }
 
 @Composable
-fun AccountCard(account: AccountResponse) {
+fun TransferCard(transfer: TransferResponse) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,11 +162,12 @@ fun AccountCard(account: AccountResponse) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Account: ${account.accountNumber}", style = MaterialTheme.typography.bodyLarge)
-            Text("User ID: ${account.userId}", style = MaterialTheme.typography.bodyMedium)
-            Text("Balance: $${account.balance}", style = MaterialTheme.typography.bodyMedium)
-            Text("Type: ${account.accountType}", style = MaterialTheme.typography.bodyMedium)
-            Text("Created: ${account.createdAt}", style = MaterialTheme.typography.bodyMedium)
+            Text("ID: ${transfer.id}", style = MaterialTheme.typography.bodyLarge)
+            Text("Amount: $${transfer.amount}", style = MaterialTheme.typography.bodyMedium)
+            Text("Sender: ${transfer.senderAccountNumber}", style = MaterialTheme.typography.bodyMedium)
+            Text("Receiver: ${transfer.receiverAccountNumber}", style = MaterialTheme.typography.bodyMedium)
+            Text("Description: ${transfer.description}", style = MaterialTheme.typography.bodyMedium)
+            Text("Created: ${transfer.createdAt}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

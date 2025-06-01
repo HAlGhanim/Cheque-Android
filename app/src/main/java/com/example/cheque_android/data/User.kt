@@ -1,6 +1,6 @@
 package com.example.cheque_android.data
 
-import java.time.LocalDateTime
+import com.google.gson.annotations.SerializedName
 
 data class User(
     var email: String,
@@ -12,5 +12,10 @@ data class User(
 )
 
 enum class Role {
-    USER, ADMIN
+    @SerializedName
+        ("USER")
+    USER,
+
+    @SerializedName("ADMIN")
+    ADMIN
 }

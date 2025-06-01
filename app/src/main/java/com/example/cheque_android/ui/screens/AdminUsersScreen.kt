@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.cheque_android.data.User
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
@@ -20,6 +21,7 @@ fun AdminUsersScreen(viewModel: ChequeViewModel, navController: NavController) {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
+        viewModel.clearErrorMessage()
         viewModel.fetchUsers()
     }
 
@@ -130,21 +132,61 @@ fun AdminUsersScreen(viewModel: ChequeViewModel, navController: NavController) {
             ) {
                 Text("Users Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
-
-                LazyColumn {
-                    items(viewModel.users) { user ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Text(text = "${user.email} (${user.role})")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Button(onClick = { user.id?.let { viewModel.deleteUser(it) } }) {
-                                Text("Delete")
-                            }
+                viewModel.errorMessage?.let { message ->
+                    Text(
+                        text = message,
+                        color = if (message.contains("successfully")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+                if (viewModel.users.isEmpty()) {
+                    Text("No users found", style = MaterialTheme.typography.bodyLarge)
+                } else {
+                    LazyColumn {
+                        items(viewModel.users) { user ->
+                            UserCard(user, viewModel)
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun UserCard(user: User, viewModel: ChequeViewModel) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("${user.email} (${user.role})", style = MaterialTheme.typography.bodyLarge)
+                Text("Status: ${user.status}", style = MaterialTheme.typography.bodyMedium)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = { user.id?.let { viewModel.deleteUser(it) } },
+                    modifier = Modifier.weight(1f),
+                    enabled = user.id != null
+                ) {
+                    Text("Delete")
+                }
+                Button(
+                    onClick = { user.id?.let { viewModel.suspendUser(it) } },
+                    modifier = Modifier.weight(1f),
+                    enabled = user.id != null && user.status == "Active"
+                ) {
+                    Text("Suspend")
                 }
             }
         }
