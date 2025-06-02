@@ -1,6 +1,6 @@
 package com.example.cheque_android.data.response
 
-data class AuthResponse(val token: String?) {
+data class TokenResponse(val token: String?) {
     fun getBearerToken(): String {
         return "Bearer $token"
     }

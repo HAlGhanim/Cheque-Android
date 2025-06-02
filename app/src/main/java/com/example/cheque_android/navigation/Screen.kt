@@ -11,5 +11,9 @@ sealed class Screen(val route: String) {
     object AdminPaymentLinks : Screen("admin_payment_links")
     object AdminKYC : Screen("admin_kyc")
     object AdminRedeem : Screen("admin_redeem")
+    object Transfer : Screen("transfer")
+    object Register: Screen("register")
+    object SignupSuccess: Screen("signupsuccess")
+    object SignupFailureScreen: Screen("signupfailurescreen")
 }
 

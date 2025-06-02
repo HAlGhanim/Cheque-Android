@@ -1,4 +1,4 @@
-package com.example.cheque_android.data
+package com.example.cheque_android.data.dto
 
 data class KYC(
     val id: Long = 0,

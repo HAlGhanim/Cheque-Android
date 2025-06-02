@@ -1,15 +1,18 @@
 package com.example.cheque_android.network
 
 import android.accounts.Account
-import com.example.cheque_android.data.AccountResponse
-import com.example.cheque_android.data.DashboardStats
-import com.example.cheque_android.data.KYC
-import com.example.cheque_android.data.User
+import com.example.cheque_android.data.dto.AccountResponse
+import com.example.cheque_android.data.dto.DashboardStats
+import com.example.cheque_android.data.dto.KYC
+import com.example.cheque_android.data.dto.User
 import com.example.cheque_android.data.request.RedeemRequest
-import com.example.cheque_android.data.response.AuthResponse
+import com.example.cheque_android.data.response.TokenResponse
 import com.example.cheque_android.data.response.PaymentLinkResponse
 import com.example.cheque_android.data.response.TransactionResponse
 import com.example.cheque_android.data.response.TransferResponse
+import com.example.cheque_android.data.request.AccountRequest
+import com.example.cheque_android.data.request.KYCRequest
+import com.example.cheque_android.data.request.RegisterRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -21,14 +24,20 @@ import retrofit2.http.Query
 interface ChequeApiService {
 
     @POST("auth/register")
-    suspend fun signup(@Body user: User): Response<AuthResponse>
+    suspend fun register(@Body request: RegisterRequest): Response<TokenResponse>
 
     @POST("auth/login")
-    suspend fun login(@Body user: User): Response<AuthResponse>
+    suspend fun login(@Body user: User): Response<TokenResponse>
 
     @GET("accounts/my")
     suspend fun getMyAccount(): Response<List<Account>>
 
+    @POST("kyc")
+    suspend fun createKyc(@Body request: KYCRequest): Response<Unit>
+
+    @POST("accounts/create")
+    suspend fun createAccount(
+        @Body accountRequest: AccountRequest): Response<Unit>
 
     // Admin Endpoints
     @GET("admin/dashboard")
