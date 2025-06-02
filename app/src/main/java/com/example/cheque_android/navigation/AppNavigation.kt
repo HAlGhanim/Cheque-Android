@@ -14,6 +14,10 @@ import com.example.cheque_android.ui.screens.AdminTransfersScreen
 import com.example.cheque_android.ui.screens.AdminUsersScreen
 import com.example.cheque_android.ui.screens.HomeScreen
 import com.example.cheque_android.ui.screens.LoginScreen
+import com.example.cheque_android.ui.screens.TransferPaymentScreen
+import com.example.cheque_android.ui.screens.RegisterScreen
+import com.example.cheque_android.ui.screens.SignupFailureScreen
+import com.example.cheque_android.ui.screens.SignupSuccessScreen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 
 @Composable
@@ -21,6 +25,9 @@ fun AppNavigation(navController: NavHostController, viewModel: ChequeViewModel) 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Login.route) {
             LoginScreen(viewModel = viewModel, navController = navController)
+        }
+        composable(Screen.Register.route) {
+            RegisterScreen(viewModel = viewModel, navController = navController)
         }
         composable(Screen.Home.route) {
             HomeScreen(viewModel = viewModel, navController = navController)
@@ -48,6 +55,15 @@ fun AppNavigation(navController: NavHostController, viewModel: ChequeViewModel) 
         }
         composable(Screen.AdminRedeem.route) {
             AdminRedeemScreen(viewModel = viewModel, navController = navController)
+        }
+        composable(Screen.Transfer.route) {
+            TransferPaymentScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.SignupSuccess.route) {
+            SignupSuccessScreen(navController = navController)
+        }
+        composable(Screen.SignupFailureScreen.route) {
+            SignupFailureScreen(navController = navController)
         }
     }
 }

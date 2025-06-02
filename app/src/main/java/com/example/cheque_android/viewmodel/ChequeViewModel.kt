@@ -7,14 +7,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cheque_android.data.AccountResponse
-import com.example.cheque_android.data.DashboardStats
-import com.example.cheque_android.data.KYC
-import com.example.cheque_android.data.Role
-import com.example.cheque_android.data.User
+import com.example.cheque_android.data.dto.AccountResponse
+import com.example.cheque_android.data.dto.DashboardStats
+import com.example.cheque_android.data.dto.KYC
+import com.example.cheque_android.data.dto.Role
+import com.example.cheque_android.data.dto.User
+import com.example.cheque_android.data.request.AccountRequest
+import com.example.cheque_android.data.request.KYCRequest
 import com.example.cheque_android.data.request.RedeemRequest
-import com.example.cheque_android.data.response.AuthResponse
+import com.example.cheque_android.data.request.RegisterRequest
 import com.example.cheque_android.data.response.PaymentLinkResponse
+import com.example.cheque_android.data.response.TokenResponse
 import com.example.cheque_android.data.response.TransactionResponse
 import com.example.cheque_android.data.response.TransferResponse
 import com.example.cheque_android.network.ChequeApiService
@@ -25,8 +28,9 @@ import java.math.BigDecimal
 
 class ChequeViewModel(private val context: Context) : ViewModel() {
     private val apiService = RetrofitHelper.getInstance(context).create(ChequeApiService::class.java)
-    var token: AuthResponse? by mutableStateOf(null)
+    var token: TokenResponse? by mutableStateOf(null)
     var user: User? by mutableStateOf(null)
+    var name by mutableStateOf("")
     var errorMessage: String? by mutableStateOf(null)
 
     // Admin States
@@ -46,7 +50,7 @@ class ChequeViewModel(private val context: Context) : ViewModel() {
 
     fun loadStoredToken() {
         Log.d("Token", "Loaded token: ${TokenManager.getToken(context)}")
-        token = AuthResponse(TokenManager.getToken(context))
+        token = TokenResponse(TokenManager.getToken(context))
         if (!TokenManager.getToken(context).isNullOrBlank()) {
             fetchCurrentUser()
         }
@@ -358,5 +362,59 @@ class ChequeViewModel(private val context: Context) : ViewModel() {
 
     fun clearErrorMessage() {
         errorMessage = null
+    }
+
+    fun registerFullFlow(
+        name: String,
+        phone: String,
+        email: String,
+        password: String,
+        role: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                // 1. Register user
+                val registerRequest = RegisterRequest(email = email, password = password)
+                val registerResponse = apiService.register(registerRequest)
+
+                if (!registerResponse.isSuccessful) {
+                    onError("Register failed: ${registerResponse.code()}")
+                    return@launch
+                }
+
+                val extractedToken = registerResponse.body()?.token
+                Log.d("RegisterDebug", "Bearer $extractedToken")
+
+                if (extractedToken.isNullOrBlank()) {
+                    onError("Token missing after registration")
+                    return@launch
+                }
+
+                TokenManager.saveToken(context, extractedToken)
+
+                // 2. Create account
+                val accountResponse = apiService.createAccount(
+                    accountRequest = AccountRequest(accountType = role.uppercase())
+                )
+
+                if (!accountResponse.isSuccessful) {
+                    onError("Account creation failed: ${accountResponse.code()}")
+                    return@launch
+                }
+
+                // 3. Create KYC
+                val kycResponse = apiService.createKyc(KYCRequest(name = name, phone = phone))
+                if (!kycResponse.isSuccessful) {
+                    onError("KYC creation failed: ${kycResponse.code()}")
+                    return@launch
+                }
+
+                onSuccess()
+            } catch (e: Exception) {
+                onError("Error: ${e.message}")
+            }
+        }
     }
 }

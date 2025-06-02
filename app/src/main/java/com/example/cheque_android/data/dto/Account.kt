@@ -1,6 +1,5 @@
-package com.example.cheque_android.data
+package com.example.cheque_android.data.dto
 
-import java.time.LocalDateTime
 import java.math.BigDecimal
 
 data class AccountResponse(

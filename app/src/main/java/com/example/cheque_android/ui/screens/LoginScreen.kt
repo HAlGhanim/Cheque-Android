@@ -5,27 +5,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.cheque_android.data.Role
+import com.example.cheque_android.data.dto.Role
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 
 @Composable
 fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
-    val context = LocalContext.current
-    var username by remember { mutableStateOf("KAlGhanim8@gmail.com") }
-    var password by remember { mutableStateOf("123456") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
-    LaunchedEffect(viewModel.token) {
-        if (!viewModel.token?.token.isNullOrBlank()) {
+    LaunchedEffect(viewModel.token, viewModel.user) {
+        if (!viewModel.token?.token.isNullOrBlank() && viewModel.user != null) {
             val route = if (viewModel.user?.role == Role.ADMIN) {
                 Screen.AdminDashboard.route
             } else {
-                viewModel.errorMessage = "Access denied: Admins only"
-                Screen.Login.route
+                Screen.Home.route
             }
             navController.navigate(route) {
                 popUpTo(Screen.Login.route) { inclusive = true }
@@ -40,7 +39,7 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Admin Login", style = MaterialTheme.typography.headlineMedium)
+        Text("Login", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(24.dp))
         viewModel.errorMessage?.let { message ->
             Text(
@@ -53,7 +52,8 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
             value = username,
             onValueChange = { username = it },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
@@ -61,7 +61,8 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
             onValueChange = { password = it },
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
@@ -76,5 +77,10 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
         ) {
             Text("Login")
         }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Don't have an account? Sign up", modifier = Modifier.clickable {
+            navController.navigate(Screen.Register.route)
+        })
     }
 }

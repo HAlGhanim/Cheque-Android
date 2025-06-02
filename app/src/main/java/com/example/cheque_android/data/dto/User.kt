@@ -1,6 +1,4 @@
-package com.example.cheque_android.data
-
-import com.google.gson.annotations.SerializedName
+package com.example.cheque_android.data.dto
 
 data class User(
     var email: String,
@@ -12,10 +10,5 @@ data class User(
 )
 
 enum class Role {
-    @SerializedName
-        ("USER")
-    USER,
-
-    @SerializedName("ADMIN")
-    ADMIN
+    USER, ADMIN
 }

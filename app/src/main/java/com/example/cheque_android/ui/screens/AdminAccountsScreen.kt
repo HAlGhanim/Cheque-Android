@@ -11,7 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cheque_android.R
-import com.example.cheque_android.data.AccountResponse
+import com.example.cheque_android.data.dto.AccountResponse
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
