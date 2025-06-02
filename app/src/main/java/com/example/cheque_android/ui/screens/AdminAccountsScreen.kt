@@ -11,7 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cheque_android.R
-import com.example.cheque_android.data.dto.AccountResponse
+import com.example.cheque_android.data.dto.Account
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
@@ -141,11 +141,11 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.accounts.isEmpty()) {
+                if (viewModel.chequeAccounts.isEmpty()) {
                     Text("No accounts found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.accounts) { account ->
+                        items(viewModel.chequeAccounts) { account ->
                             AccountCard(account)
                         }
                     }
@@ -156,7 +156,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
 }
 
 @Composable
-fun AccountCard(account: AccountResponse) {
+fun AccountCard(chequeAccount: Account) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -172,11 +172,11 @@ fun AccountCard(account: AccountResponse) {
                     .padding(end = 16.dp)
             )
             Column {
-                Text("Account: ${account.accountNumber}", style = MaterialTheme.typography.bodyLarge)
-                Text("User ID: ${account.userId}", style = MaterialTheme.typography.bodyMedium)
-                Text("Balance: $${account.balance}", style = MaterialTheme.typography.bodyMedium)
-                Text("Type: ${account.accountType}", style = MaterialTheme.typography.bodyMedium)
-                Text("Created: ${account.createdAt}", style = MaterialTheme.typography.bodyMedium)
+                Text("Account: ${chequeAccount.accountNumber}", style = MaterialTheme.typography.bodyLarge)
+                Text("User ID: ${chequeAccount.userId}", style = MaterialTheme.typography.bodyMedium)
+                Text("Balance: $${chequeAccount.balance}", style = MaterialTheme.typography.bodyMedium)
+                Text("Type: ${chequeAccount.accountType}", style = MaterialTheme.typography.bodyMedium)
+                Text("Created: ${chequeAccount.createdAt}", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
