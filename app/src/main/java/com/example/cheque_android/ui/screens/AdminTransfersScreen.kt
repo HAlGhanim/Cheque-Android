@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import com.example.cheque_android.R
 import com.example.cheque_android.data.response.TransferResponse
 import com.example.cheque_android.navigation.Screen
+import com.example.cheque_android.utils.formatDate
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
@@ -182,7 +183,7 @@ fun TransferCard(transfer: TransferResponse) {
                 Text("Sender: ${transfer.senderAccountNumber}", style = MaterialTheme.typography.bodyMedium)
                 Text("Receiver: ${transfer.receiverAccountNumber}", style = MaterialTheme.typography.bodyMedium)
                 Text("Description: ${transfer.description}", style = MaterialTheme.typography.bodyMedium)
-                Text("Created: ${transfer.createdAt}", style = MaterialTheme.typography.bodyMedium)
+                Text("Created: ${formatDate(transfer.createdAt)}", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

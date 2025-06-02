@@ -1,14 +1,10 @@
 package com.example.cheque_android.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -20,7 +16,6 @@ import com.example.cheque_android.ui.composables.LoadingIndicator
 import com.example.cheque_android.ui.composables.SheetTransactionsContent
 import com.example.cheque_android.ui.composables.TransactionsCard
 import com.example.cheque_android.viewmodel.ChequeViewModel
-import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +32,6 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
     val cardNumber = if (showBalance) account?.accountNumber ?: "**** **** ****" else "**** **** ****"
 
     val sheetState = rememberBottomSheetScaffoldState()
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         if (!viewModel.token?.token.isNullOrBlank() && viewModel.user != null) {
@@ -67,7 +61,7 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "Hello ${viewModel.user?.email?.substringBefore("@")?.replaceFirstChar { it.uppercase() } ?: "User"}",
+                    "Hello ${viewModel.kycName}",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Black
                 )

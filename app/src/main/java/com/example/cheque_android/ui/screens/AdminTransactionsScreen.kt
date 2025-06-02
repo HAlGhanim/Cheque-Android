@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import com.example.cheque_android.R
 import com.example.cheque_android.data.response.TransactionResponse
 import com.example.cheque_android.navigation.Screen
+import com.example.cheque_android.utils.formatDate
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
@@ -181,7 +182,7 @@ fun TransactionCard(transaction: TransactionResponse) {
                 Text("Amount: $${transaction.amount}", style = MaterialTheme.typography.bodyMedium)
                 Text("Sender: ${transaction.senderAccountNumber}", style = MaterialTheme.typography.bodyMedium)
                 Text("Receiver: ${transaction.receiverAccountNumber}", style = MaterialTheme.typography.bodyMedium)
-                Text("Created: ${transaction.createdAt}", style = MaterialTheme.typography.bodyMedium)
+                Text("Created: ${formatDate(transaction.createdAt)}", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

@@ -382,9 +382,9 @@ class ChequeViewModel(
     fun loadKycData() {
         viewModelScope.launch {
             try {
-                val response = apiService.getCurrentUser()
+                val response = apiService.getMyKyc()
                 if (response.isSuccessful) {
-                    kycName = response.body()?.email ?: "User"
+                    kycName = response.body()?.name ?: "User"
                 }
             } catch (e: Exception) {
                 Log.e("KycData", "Failed to load KYC data: ${e.message}")

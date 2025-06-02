@@ -19,6 +19,9 @@ interface ChequeApiService {
     @POST("kyc")
     suspend fun createKyc(@Body request: KYCRequest): Response<Unit>
 
+    @GET("kyc/user")
+    suspend fun getMyKyc(): Response<KYCResponse>
+
     @GET("users/me")
     suspend fun getCurrentUser(): Response<User>
 

@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cheque_android.R
 import com.example.cheque_android.navigation.Screen
+import com.example.cheque_android.ui.composables.StatRow
+import com.example.cheque_android.utils.formatDate
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
@@ -148,35 +148,13 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
                             StatRow("Total Users", stats.totalUsers.toString(), R.drawable.idcard)
                             StatRow("Total Transactions", stats.totalTransactions.toString(), R.drawable.bankstatement)
                             StatRow("Growth Percentage", "${stats.growthPercentage}%", R.drawable.reward)
-                            StatRow("Last Updated", stats.lastUpdated.toString(), R.drawable.card)
+                            StatRow("Last Updated", formatDate(stats.lastUpdated), R.drawable.card)
                         }
                     }
                 } ?: run {
                     Text("Loading dashboard stats...", style = MaterialTheme.typography.bodyLarge)
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun StatRow(label: String, value: String, iconRes: Int) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = label,
-            modifier = Modifier
-                .size(60.dp)
-                .padding(end = 16.dp)
-        )
-        Column {
-            Text(label, style = MaterialTheme.typography.bodyLarge)
-            Text(value, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

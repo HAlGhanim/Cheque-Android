@@ -13,6 +13,7 @@ import androidx.navigation.NavController
 import com.example.cheque_android.R
 import com.example.cheque_android.data.dto.Account
 import com.example.cheque_android.navigation.Screen
+import com.example.cheque_android.utils.formatDate
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
@@ -176,7 +177,7 @@ fun AccountCard(chequeAccount: Account) {
                 Text("User ID: ${chequeAccount.userId}", style = MaterialTheme.typography.bodyMedium)
                 Text("Balance: $${chequeAccount.balance}", style = MaterialTheme.typography.bodyMedium)
                 Text("Type: ${chequeAccount.accountType}", style = MaterialTheme.typography.bodyMedium)
-                Text("Created: ${chequeAccount.createdAt}", style = MaterialTheme.typography.bodyMedium)
+                Text("Created: ${formatDate(chequeAccount.createdAt)}", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
