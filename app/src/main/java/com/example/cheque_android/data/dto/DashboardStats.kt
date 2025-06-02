@@ -1,4 +1,4 @@
-package com.example.cheque_android.data
+package com.example.cheque_android.data.dto
 
 data class DashboardStats(
     val totalUsers: Long,

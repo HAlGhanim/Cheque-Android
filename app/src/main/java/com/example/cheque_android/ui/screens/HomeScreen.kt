@@ -3,27 +3,15 @@ package com.example.cheque_android.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.cheque_android.data.Role
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 
 @Composable
 fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
-    LaunchedEffect(viewModel.user) {
-        if (viewModel.user?.role != Role.ADMIN) {
-            viewModel.errorMessage = "Access denied: Admins only"
-//            viewModel.logout()
-            navController.navigate(Screen.Login.route) {
-                popUpTo(0)
-            }
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,5 +41,11 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
         ) {
             Text("Logout")
         }
+        Button(onClick = {
+            navController.navigate(Screen.Transfer.route)
+        }) {
+            Text("Go to Transfer Screen")
+        }
+
     }
 }
