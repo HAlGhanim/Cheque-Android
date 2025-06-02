@@ -3,7 +3,7 @@ package com.example.cheque_android.data
 data class User(
     var email: String,
     var password: String,
-    val role: Role? = null,
+    val role: Role = Role.USER,
     val token: String? = null
 )
 
