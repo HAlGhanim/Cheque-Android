@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.ui.composables.ActionButton
 import com.example.cheque_android.ui.composables.BankCardSection
+import com.example.cheque_android.ui.composables.LoadingIndicator
 import com.example.cheque_android.ui.composables.SheetTransactionsContent
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
@@ -38,9 +39,16 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        viewModel.getMyAccount()
-        viewModel.getMyTransactions()
-        viewModel.loadKycData()
+        if (!viewModel.token?.token.isNullOrBlank() && viewModel.user != null) {
+            viewModel.getMyAccount()
+            viewModel.getMyTransactions()
+            viewModel.loadKycData()
+        }
+    }
+
+    if (viewModel.isLoading || viewModel.user == null || viewModel.chequeAccount == null) {
+        LoadingIndicator()
+        return
     }
 
     BottomSheetScaffold(
@@ -56,7 +64,6 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // Main content area scrolls
             Column(modifier = Modifier.weight(1f)) {
                 Text("Hello ${viewModel.kycName}", style = MaterialTheme.typography.titleMedium, color = Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -100,7 +107,6 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
-            // Logout fixed at the bottom
             FilledTonalButton(
                 onClick = { showLogoutDialog = true },
                 modifier = Modifier.fillMaxWidth(),

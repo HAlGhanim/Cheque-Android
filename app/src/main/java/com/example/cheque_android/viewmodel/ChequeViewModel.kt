@@ -63,15 +63,21 @@ class ChequeViewModel(
     var generatedCode: Map<String, Any>? by mutableStateOf(null)
         private set
 
+    var isLoading by mutableStateOf(false)
+        private set
+
     init {
         loadStoredToken()
     }
 
-    private fun loadStoredToken() {
+    private var hasInitialized = false
+
+    fun loadStoredToken() {
         val savedToken = TokenManager.getToken(context)
-        Log.d("LoadStoredToken", "Loaded stored token: $savedToken")
         token = savedToken?.let { TokenResponse(it) }
-        if (savedToken != null) {
+
+        if (!hasInitialized && savedToken != null) {
+            hasInitialized = true
             fetchCurrentUser()
         }
     }
@@ -104,6 +110,7 @@ class ChequeViewModel(
 
     fun login(username: String, password: String, onNavigate: ((String) -> Unit)? = null) {
         viewModelScope.launch {
+            isLoading = true
             try {
                 val authResponse = apiService.login(User(email = username, password = password)).body()
                 token = authResponse
@@ -111,6 +118,7 @@ class ChequeViewModel(
                 if (rawToken.isNullOrBlank()) {
                     errorMessage = "Token is null in response"
                     onNavigate?.invoke("home")
+                    isLoading = false
                     return@launch
                 }
 
@@ -124,14 +132,16 @@ class ChequeViewModel(
                     onNavigate?.invoke(route)
                     getMyAccount()
                 } catch (e: Exception) {
-                    onNavigate?.invoke("home")
-                    getMyAccount()
+                    errorMessage = "Failed to fetch user: ${e.message}"
                 }
             } catch (e: Exception) {
                 errorMessage = "Login failed: ${e.message}"
+            } finally {
+                isLoading = false
             }
         }
     }
+
 
     fun registerFullFlow(
         name: String,
@@ -177,10 +187,10 @@ class ChequeViewModel(
                 if (response.isSuccessful) {
                     user = response.body()
                 } else {
-                    logout()
+                    errorMessage = "Failed to fetch user"
                 }
             } catch (e: Exception) {
-                logout()
+                errorMessage = "Exception: ${e.localizedMessage}"
             }
         }
     }
@@ -190,7 +200,7 @@ class ChequeViewModel(
             try {
                 val response = apiService.getMyAccount()
                 if (response.isSuccessful) {
-                    chequeAccount = response.body()?.firstOrNull() as? Account
+                    chequeAccount = response.body()?.firstOrNull() as Account?
                     if (chequeAccount != null) {
                         getMyTransactions()
                     }

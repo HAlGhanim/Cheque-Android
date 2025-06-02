@@ -34,7 +34,7 @@ interface ChequeApiService {
 
     // 💸 Transactions
     @GET("transactions/my")
-    suspend fun getMyTransactions(string: String): Response<List<TransactionResponse>>
+    suspend fun getMyTransactions(): Response<List<TransactionResponse>>
 
     @POST("redeem/use/{code}")
     suspend fun redeemCode(
