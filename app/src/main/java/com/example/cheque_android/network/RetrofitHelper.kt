@@ -18,10 +18,6 @@ object RetrofitHelper {
             })
             .build()
 
-        val gson = GsonBuilder()
-            .setLenient() // Allow parsing of malformed JSON
-            .create()
-
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)

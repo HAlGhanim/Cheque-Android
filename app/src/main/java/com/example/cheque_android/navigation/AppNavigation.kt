@@ -14,6 +14,7 @@ import com.example.cheque_android.ui.screens.AdminTransfersScreen
 import com.example.cheque_android.ui.screens.AdminUsersScreen
 import com.example.cheque_android.ui.screens.HomeScreen
 import com.example.cheque_android.ui.screens.LoginScreen
+import com.example.cheque_android.ui.screens.RedeemScreen
 import com.example.cheque_android.ui.screens.TransferPaymentScreen
 import com.example.cheque_android.ui.screens.RegisterScreen
 import com.example.cheque_android.ui.screens.SignupFailureScreen
@@ -64,6 +65,9 @@ fun AppNavigation(navController: NavHostController, viewModel: ChequeViewModel) 
         }
         composable(Screen.SignupFailureScreen.route) {
             SignupFailureScreen(navController = navController)
+        }
+        composable(Screen.Redeem.route){
+            RedeemScreen(viewModel = viewModel, navController = navController)
         }
     }
 }

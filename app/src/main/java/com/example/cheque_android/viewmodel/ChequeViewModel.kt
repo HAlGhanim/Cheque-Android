@@ -30,9 +30,6 @@ class ChequeViewModel(
     var transactions: List<TransactionResponse> by mutableStateOf(emptyList())
         private set
 
-    var loginError: String? by mutableStateOf(null)
-        private set
-
     var errorMessage: String? by mutableStateOf(null)
         internal set
 
@@ -72,7 +69,7 @@ class ChequeViewModel(
 
     private fun loadStoredToken() {
         val savedToken = TokenManager.getToken(context)
-        Log.d(TAG, "Loaded stored token: $savedToken")
+        Log.d("LoadStoredToken", "Loaded stored token: $savedToken")
         token = savedToken?.let { TokenResponse(it) }
         if (savedToken != null) {
             fetchCurrentUser()
@@ -81,13 +78,12 @@ class ChequeViewModel(
 
     fun clearErrorMessage() {
         errorMessage = null
-        loginError = null
     }
 
     fun logout() {
         TokenManager.clearToken(context)
         resetState()
-        Log.d(TAG, "Logged out and state reset")
+        Log.d("Logout", "Logged out and state reset")
     }
 
     private fun resetState() {
@@ -104,7 +100,6 @@ class ChequeViewModel(
         activeCodeCount = null
         generatedCode = null
         errorMessage = null
-        loginError = null
     }
 
     fun login(username: String, password: String, onNavigate: ((String) -> Unit)? = null) {
@@ -114,8 +109,7 @@ class ChequeViewModel(
                 token = authResponse
                 val rawToken = authResponse?.token
                 if (rawToken.isNullOrBlank()) {
-                    loginError = "Token is null in response"
-                    errorMessage = loginError
+                    errorMessage = "Token is null in response"
                     onNavigate?.invoke("home")
                     return@launch
                 }
@@ -134,8 +128,7 @@ class ChequeViewModel(
                     getMyAccount()
                 }
             } catch (e: Exception) {
-                loginError = "Login failed: ${e.message}"
-                errorMessage = loginError
+                errorMessage = "Login failed: ${e.message}"
             }
         }
     }
@@ -203,7 +196,7 @@ class ChequeViewModel(
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to fetch account: ${e.message}")
+                Log.e("GetMyAccount", "Failed to fetch account: ${e.message}")
             }
         }
     }
@@ -217,7 +210,7 @@ class ChequeViewModel(
                     transactions = response.body() ?: emptyList()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to fetch transactions: ${e.message}")
+                Log.e("GetTransactions", "Failed to fetch transactions: ${e.message}")
             }
         }
     }
@@ -385,12 +378,28 @@ class ChequeViewModel(
                     kycName = response.body()?.email ?: "User"
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to load KYC data: ${e.message}")
+                Log.e("KycData", "Failed to load KYC data: ${e.message}")
             }
         }
     }
 
-    companion object {
-        private const val TAG = "ChequeViewModel"
+    fun redeemCode(code: String, onResult: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.redeemCode(code)
+                if (response.isSuccessful) {
+                    val message = response.body()?.get("message") ?: "Redeemed successfully"
+                    getMyAccount() // optional: refresh balance
+                    getMyTransactions() // optional: refresh transaction list
+                    onResult(message)
+                } else {
+                    val error = response.errorBody()?.string() ?: "Failed to redeem"
+                    onResult("Error: $error")
+                }
+            } catch (e: Exception) {
+                onResult("Exception: ${e.localizedMessage}")
+            }
+        }
     }
+
 }
