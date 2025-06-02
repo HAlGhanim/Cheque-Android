@@ -1,6 +1,5 @@
 package com.example.cheque_android.network
 
-import android.accounts.Account
 import com.example.cheque_android.data.dto.*
 import com.example.cheque_android.data.request.*
 import com.example.cheque_android.data.response.*

@@ -200,7 +200,7 @@ class ChequeViewModel(
             try {
                 val response = apiService.getMyAccount()
                 if (response.isSuccessful) {
-                    chequeAccount = response.body()?.firstOrNull() as Account?
+                    chequeAccount = response.body()?.firstOrNull()
                     if (chequeAccount != null) {
                         getMyTransactions()
                     }
@@ -214,8 +214,7 @@ class ChequeViewModel(
     fun getMyTransactions() {
         viewModelScope.launch {
             try {
-                val tokenValue = token?.token ?: return@launch
-                val response = apiService.getMyTransactions("Bearer $tokenValue")
+                val response = apiService.getMyTransactions()
                 if (response.isSuccessful) {
                     transactions = response.body() ?: emptyList()
                 }
@@ -280,7 +279,7 @@ class ChequeViewModel(
             try {
                 val response = apiService.getAllAccounts()
                 if (response.isSuccessful) {
-                    chequeAccounts = response.body()?.filterIsInstance<Account>() ?: emptyList()
+                    chequeAccounts = response.body()!!
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
