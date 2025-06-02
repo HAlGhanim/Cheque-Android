@@ -1,5 +1,6 @@
 package com.example.cheque_android.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,8 +8,10 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.cheque_android.R
 import com.example.cheque_android.data.dto.KYC
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
@@ -161,11 +164,24 @@ fun KYCCard(kyc: KYC) {
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("ID: ${kyc.id}", style = MaterialTheme.typography.bodyLarge)
-            Text("Name: ${kyc.name}", style = MaterialTheme.typography.bodyMedium)
-            Text("Phone: ${kyc.phone ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
-            Text("User: ${kyc.user?.email ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.idcard),
+                contentDescription = "ID Card Icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(end = 16.dp)
+            )
+            Column {
+                Text("ID: ${kyc.id}", style = MaterialTheme.typography.bodyLarge)
+                Text("Name: ${kyc.name}", style = MaterialTheme.typography.bodyMedium)
+                Text("Phone: ${kyc.phone ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
+                Text("User: ${kyc.user?.email ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
+            }
         }
     }
 }

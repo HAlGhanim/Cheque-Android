@@ -7,8 +7,10 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.cheque_android.R
 import com.example.cheque_android.data.dto.AccountResponse
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
@@ -161,12 +163,21 @@ fun AccountCard(account: AccountResponse) {
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Account: ${account.accountNumber}", style = MaterialTheme.typography.bodyLarge)
-            Text("User ID: ${account.userId}", style = MaterialTheme.typography.bodyMedium)
-            Text("Balance: $${account.balance}", style = MaterialTheme.typography.bodyMedium)
-            Text("Type: ${account.accountType}", style = MaterialTheme.typography.bodyMedium)
-            Text("Created: ${account.createdAt}", style = MaterialTheme.typography.bodyMedium)
+        Row(modifier = Modifier.padding(16.dp)) {
+            Icon(
+                painter = painterResource(id = R.drawable.wallet),
+                contentDescription = "Account Icon",
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(end = 16.dp)
+            )
+            Column {
+                Text("Account: ${account.accountNumber}", style = MaterialTheme.typography.bodyLarge)
+                Text("User ID: ${account.userId}", style = MaterialTheme.typography.bodyMedium)
+                Text("Balance: $${account.balance}", style = MaterialTheme.typography.bodyMedium)
+                Text("Type: ${account.accountType}", style = MaterialTheme.typography.bodyMedium)
+                Text("Created: ${account.createdAt}", style = MaterialTheme.typography.bodyMedium)
+            }
         }
     }
 }
