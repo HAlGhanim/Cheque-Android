@@ -1,5 +1,6 @@
 package com.example.cheque_android.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,8 +8,10 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.cheque_android.R
 import com.example.cheque_android.data.response.PaymentLinkResponse
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
@@ -161,18 +164,31 @@ fun PaymentLinkCard(link: PaymentLinkResponse, viewModel: ChequeViewModel) {
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("UUID: ${link.uuid}", style = MaterialTheme.typography.bodyLarge)
-            Text("Amount: $${link.amount}", style = MaterialTheme.typography.bodyMedium)
-            Text("Account: ${link.accountNumber}", style = MaterialTheme.typography.bodyMedium)
-            Text("Description: ${link.description}", style = MaterialTheme.typography.bodyMedium)
-            Text("Status: ${link.status}", style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = { viewModel.deletePaymentLink(link.id) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Delete")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.wallet),
+                contentDescription = "Wallet Icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(end = 16.dp)
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text("UUID: ${link.uuid}", style = MaterialTheme.typography.bodyLarge)
+                Text("Amount: $${link.amount}", style = MaterialTheme.typography.bodyMedium)
+                Text("Account: ${link.accountNumber}", style = MaterialTheme.typography.bodyMedium)
+                Text("Description: ${link.description}", style = MaterialTheme.typography.bodyMedium)
+                Text("Status: ${link.status}", style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { viewModel.deletePaymentLink(link.id) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Delete")
+                }
             }
         }
     }

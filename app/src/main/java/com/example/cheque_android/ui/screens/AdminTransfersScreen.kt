@@ -1,5 +1,6 @@
 package com.example.cheque_android.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,8 +8,10 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.cheque_android.R
 import com.example.cheque_android.data.response.TransferResponse
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
@@ -161,13 +164,26 @@ fun TransferCard(transfer: TransferResponse) {
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("ID: ${transfer.id}", style = MaterialTheme.typography.bodyLarge)
-            Text("Amount: $${transfer.amount}", style = MaterialTheme.typography.bodyMedium)
-            Text("Sender: ${transfer.senderAccountNumber}", style = MaterialTheme.typography.bodyMedium)
-            Text("Receiver: ${transfer.receiverAccountNumber}", style = MaterialTheme.typography.bodyMedium)
-            Text("Description: ${transfer.description}", style = MaterialTheme.typography.bodyMedium)
-            Text("Created: ${transfer.createdAt}", style = MaterialTheme.typography.bodyMedium)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.transfermoney),
+                contentDescription = "Transfer Icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(end = 16.dp)
+            )
+            Column {
+                Text("ID: ${transfer.id}", style = MaterialTheme.typography.bodyLarge)
+                Text("Amount: $${transfer.amount}", style = MaterialTheme.typography.bodyMedium)
+                Text("Sender: ${transfer.senderAccountNumber}", style = MaterialTheme.typography.bodyMedium)
+                Text("Receiver: ${transfer.receiverAccountNumber}", style = MaterialTheme.typography.bodyMedium)
+                Text("Description: ${transfer.description}", style = MaterialTheme.typography.bodyMedium)
+                Text("Created: ${transfer.createdAt}", style = MaterialTheme.typography.bodyMedium)
+            }
         }
     }
 }
