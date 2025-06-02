@@ -398,8 +398,8 @@ class ChequeViewModel(
                 val response = apiService.redeemCode(code)
                 if (response.isSuccessful) {
                     val message = response.body()?.get("message") ?: "Redeemed successfully"
-                    getMyAccount() // optional: refresh balance
-                    getMyTransactions() // optional: refresh transaction list
+                    getMyAccount()
+                    getMyTransactions()
                     onResult(message)
                 } else {
                     val error = response.errorBody()?.string() ?: "Failed to redeem"
@@ -407,6 +407,17 @@ class ChequeViewModel(
                 }
             } catch (e: Exception) {
                 onResult("Exception: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    fun getTransactionsByAccount(accountNumber: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getTransactionsByAccount(accountNumber)
+                transactions = response
+            } catch (e: Exception) {
+                Log.e("ChequeViewModel", "Failed to get transactions: ${e.message}")
             }
         }
     }

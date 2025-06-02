@@ -119,4 +119,10 @@ interface ChequeApiService {
 
     @POST("admin/redeem/generate")
     suspend fun generateRedeemCode(@Body request: RedeemRequest): Response<Map<String, Any>>
+
+    @GET("transactions/byAccount/{accountNumber}")
+    suspend fun getTransactionsByAccount(
+        @Path("accountNumber") accountNumber: String
+    ): List<TransactionResponse>
+
 }

@@ -18,6 +18,7 @@ import com.example.cheque_android.ui.composables.ActionButton
 import com.example.cheque_android.ui.composables.BankCardSection
 import com.example.cheque_android.ui.composables.LoadingIndicator
 import com.example.cheque_android.ui.composables.SheetTransactionsContent
+import com.example.cheque_android.ui.composables.TransactionsCard
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
@@ -65,7 +66,12 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
                 .padding(16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Hello ${viewModel.kycName}", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+                Text(
+                    "Hello ${viewModel.user?.email?.substringBefore("@")?.replaceFirstChar { it.uppercase() } ?: "User"}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black
+                )
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 BankCardSection(
@@ -90,21 +96,7 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { scope.launch { sheetState.bottomSheetState.expand() } },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Transactions", style = MaterialTheme.typography.titleMedium, color = Color.Black)
-                        Text("Swipe or tap to view", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-                    }
-                    Icon(Icons.Filled.ExpandLess, contentDescription = "Expand", tint = Color.Black)
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
+                TransactionsCard(viewModel, account?.accountNumber ?: "")
             }
 
             FilledTonalButton(
