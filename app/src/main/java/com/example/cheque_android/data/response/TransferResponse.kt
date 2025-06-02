@@ -1,7 +1,6 @@
 package com.example.cheque_android.data.response
 
 import java.math.BigDecimal
-import java.time.LocalDateTime
 
 data class TransferResponse(
     val id: Long,

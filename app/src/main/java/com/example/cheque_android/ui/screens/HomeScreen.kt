@@ -34,7 +34,7 @@ import java.text.DecimalFormat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
-    val account = viewModel.account
+    val account = viewModel.chequeAccount
     val transactions by remember { derivedStateOf { viewModel.transactions } }
 
     var showBalance by remember { mutableStateOf(false) }
@@ -235,7 +235,7 @@ fun ActionButton(label: String, icon: String, onClick: () -> Unit) {
 
 @Composable
 fun SheetTransactionsContent(
-    transactions: List<com.example.cheque_android.data.TransactionResponse>,
+    transactions: List<com.example.cheque_android.data.response.TransactionResponse>,
     accountNumber: String?
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
