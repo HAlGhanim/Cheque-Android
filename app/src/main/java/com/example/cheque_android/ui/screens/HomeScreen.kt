@@ -36,7 +36,6 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
     LaunchedEffect(Unit) {
         if (!viewModel.token?.token.isNullOrBlank() && viewModel.user != null) {
             viewModel.getMyAccount()
-            viewModel.getMyTransactions()
             viewModel.loadKycData()
         }
     }

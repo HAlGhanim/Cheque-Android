@@ -206,27 +206,13 @@ class ChequeViewModel(
                 if (response.isSuccessful) {
                     chequeAccount = response.body()?.firstOrNull()
                     chequeAccount?.let {
-                        getMyTransactions()
+                        getTransactionsByAccount(it.accountNumber)
                     }
                 }
             } catch (e: Exception) {
                 Log.e("GetMyAccount", "Failed to fetch account: ${e.message}")
             } finally {
                 isAccountLoaded = true
-            }
-        }
-    }
-
-
-    fun getMyTransactions() {
-        viewModelScope.launch {
-            try {
-                val response = apiService.getMyTransactions()
-                if (response.isSuccessful) {
-                    transactions = response.body() ?: emptyList()
-                }
-            } catch (e: Exception) {
-                Log.e("GetTransactions", "Failed to fetch transactions: ${e.message}")
             }
         }
     }
@@ -406,7 +392,6 @@ class ChequeViewModel(
                 if (response.isSuccessful) {
                     val message = response.body()?.get("message") ?: "Redeemed successfully"
                     getMyAccount()
-                    getMyTransactions()
                     onResult(message)
                 } else {
                     val error = response.errorBody()?.string() ?: "Failed to redeem"

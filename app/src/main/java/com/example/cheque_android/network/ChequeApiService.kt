@@ -35,8 +35,10 @@ interface ChequeApiService {
     suspend fun getMyAccount(): Response<List<Account>>
 
     // 💸 Transactions
-    @GET("transactions/my")
-    suspend fun getMyTransactions(): Response<List<TransactionResponse>>
+    @GET("transactions/byAccount/{accountNumber}")
+    suspend fun getTransactionsByAccount(
+        @Path("accountNumber") accountNumber: String
+    ): List<TransactionResponse>
 
     @POST("redeem/use/{code}")
     suspend fun redeemCode(
@@ -122,10 +124,5 @@ interface ChequeApiService {
 
     @POST("admin/redeem/generate")
     suspend fun generateRedeemCode(@Body request: RedeemRequest): Response<Map<String, Any>>
-
-    @GET("transactions/byAccount/{accountNumber}")
-    suspend fun getTransactionsByAccount(
-        @Path("accountNumber") accountNumber: String
-    ): List<TransactionResponse>
 
 }
