@@ -66,6 +66,10 @@ class ChequeViewModel(
     var isLoading by mutableStateOf(false)
         private set
 
+    var isAccountLoaded by mutableStateOf(false)
+        private set
+
+
     init {
         loadStoredToken()
     }
@@ -108,32 +112,30 @@ class ChequeViewModel(
         errorMessage = null
     }
 
-    fun login(username: String, password: String, onNavigate: ((String) -> Unit)? = null) {
+    fun login(username: String, password: String) {
         viewModelScope.launch {
             isLoading = true
             try {
                 val authResponse = apiService.login(User(email = username, password = password)).body()
-                token = authResponse
                 val rawToken = authResponse?.token
+
                 if (rawToken.isNullOrBlank()) {
                     errorMessage = "Token is null in response"
-                    onNavigate?.invoke("home")
                     isLoading = false
                     return@launch
                 }
 
                 TokenManager.saveToken(context, rawToken)
-                this@ChequeViewModel.token = TokenResponse(rawToken)
+                token = TokenResponse(rawToken)
 
-                try {
-                    val fetchedUser = apiService.getCurrentUser().body()
+                val fetchedUser = apiService.getCurrentUser().body()
+                if (fetchedUser == null) {
+                    errorMessage = "Failed to fetch user"
+                } else {
                     user = fetchedUser
-                    val route = if (fetchedUser?.role == Role.ADMIN) "admin_dashboard" else "home"
-                    onNavigate?.invoke(route)
                     getMyAccount()
-                } catch (e: Exception) {
-                    errorMessage = "Failed to fetch user: ${e.message}"
                 }
+
             } catch (e: Exception) {
                 errorMessage = "Login failed: ${e.message}"
             } finally {
@@ -141,6 +143,7 @@ class ChequeViewModel(
             }
         }
     }
+
 
 
     fun registerFullFlow(
@@ -197,19 +200,23 @@ class ChequeViewModel(
 
     fun getMyAccount() {
         viewModelScope.launch {
+            isAccountLoaded = false
             try {
                 val response = apiService.getMyAccount()
                 if (response.isSuccessful) {
                     chequeAccount = response.body()?.firstOrNull()
-                    if (chequeAccount != null) {
+                    chequeAccount?.let {
                         getMyTransactions()
                     }
                 }
             } catch (e: Exception) {
                 Log.e("GetMyAccount", "Failed to fetch account: ${e.message}")
+            } finally {
+                isAccountLoaded = true
             }
         }
     }
+
 
     fun getMyTransactions() {
         viewModelScope.launch {
