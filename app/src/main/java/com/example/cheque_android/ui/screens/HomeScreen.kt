@@ -36,12 +36,11 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
     LaunchedEffect(Unit) {
         if (!viewModel.token?.token.isNullOrBlank() && viewModel.user != null) {
             viewModel.getMyAccount()
-            viewModel.getMyTransactions()
             viewModel.loadKycData()
         }
     }
 
-    if (viewModel.isLoading || viewModel.user == null || viewModel.chequeAccount == null) {
+    if (!viewModel.isAccountLoaded || viewModel.user == null) {
         LoadingIndicator()
         return
     }
