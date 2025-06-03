@@ -119,16 +119,16 @@ interface ChequeApiService {
     @GET("admin/kyc/{id}")
     suspend fun getKYCById(@Path("id") id: Long): Response<KYC>
 
-    @GET("api/admin/redeem/active/count")
+    @GET("admin/redeem/active/count")
     suspend fun getActiveCodeCount(): Response<Any>
 
-    @GET("api/admin/redeem/total/count")
+    @GET("admin/redeem/total/count")
     suspend fun getTotalCodeCount(): Response<Any>
 
-    @GET("api/admin/redeem/inactive/count")
+    @GET("admin/redeem/inactive/count")
     suspend fun getInactiveCodeCount(): Response<Any>
 
-    @GET("api/admin/redeem/all")
+    @GET("admin/redeem/all")
     suspend fun getAllCodesWithUsers(): Response<List<RedeemCodeResponse>>
 
     @POST("admin/redeem/generate")
@@ -142,12 +142,12 @@ interface ChequeApiService {
         @Path("uuid") uuid: String
     ): PaymentLinkResponse
 
-    @POST("/api/transfer")
+    @POST("transfer")
     suspend fun createTransfer(
         @Body request: TransferRequest
     ): TransferResponse
 
-    @GET("/api/transfer/my")
+    @GET("transfer/my")
     suspend fun getMyTransfers(): List<TransferResponse>
 
 }
