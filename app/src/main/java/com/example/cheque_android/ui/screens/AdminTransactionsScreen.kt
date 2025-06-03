@@ -138,8 +138,6 @@ fun AdminTransactionsScreen(viewModel: ChequeViewModel, navController: NavContro
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Transactions Management", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
                 SearchBar(
                     query = viewModel.transactionSearchQuery,
                     onQueryChange = { viewModel.updateTransactionSearchQuery(it) },

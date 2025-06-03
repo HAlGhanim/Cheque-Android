@@ -140,8 +140,6 @@ fun AdminPaymentLinksScreen(viewModel: ChequeViewModel, navController: NavContro
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Payment Links Management", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
                 SearchBar(
                     query = viewModel.paymentLinkSearchQuery,
                     onQueryChange = { viewModel.updatePaymentLinkSearchQuery(it) },

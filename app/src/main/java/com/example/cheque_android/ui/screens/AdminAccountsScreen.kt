@@ -135,8 +135,6 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Accounts Management", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
                 SearchBar(
                     query = viewModel.accountSearchQuery,
                     onQueryChange = { viewModel.updateAccountSearchQuery(it) },

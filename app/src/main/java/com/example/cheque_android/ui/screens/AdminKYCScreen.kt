@@ -136,8 +136,6 @@ fun AdminKYCScreen(viewModel: ChequeViewModel, navController: NavController) {
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("KYC Management", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
                 SearchBar(
                     query = viewModel.kycSearchQuery,
                     onQueryChange = { viewModel.updateKycSearchQuery(it) },

@@ -138,8 +138,6 @@ fun AdminUsersScreen(viewModel: ChequeViewModel, navController: NavController) {
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Users Management", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
                 SearchBar(
                     query = viewModel.userSearchQuery,
                     onQueryChange = { viewModel.updateUserSearchQuery(it) },

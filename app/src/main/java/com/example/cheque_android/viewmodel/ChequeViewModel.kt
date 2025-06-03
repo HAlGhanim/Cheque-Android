@@ -47,8 +47,13 @@ class ChequeViewModel(
         private set
     var activeCodeCount: Int? by mutableStateOf(null)
         private set
-    var generatedCode: Map<String, Any>? by mutableStateOf(null)
+    var totalCodeCount: Int? by mutableStateOf(null)
         private set
+    var inactiveCodeCount: Int? by mutableStateOf(null)
+        private set
+    var allCodes: List<RedeemCodeResponse> by mutableStateOf(emptyList())
+    var generatedCode: Map<String, Any>? by mutableStateOf(null)
+    private set
     var isLoading by mutableStateOf(false)
         private set
     var accountSearchQuery by mutableStateOf("")
@@ -116,6 +121,9 @@ class ChequeViewModel(
         paymentLinks = emptyList()
         kycRecords = emptyList()
         activeCodeCount = null
+        totalCodeCount = null
+        inactiveCodeCount = null
+        allCodes = emptyList()
         generatedCode = null
         errorMessage = null
     }
@@ -353,7 +361,7 @@ class ChequeViewModel(
                 val response = apiService.getUsers(page, size, role)
                 if (response.isSuccessful) {
                     users = response.body() ?: emptyList()
-                    updateFilteredUsers() // Add this to update filtered list
+                    updateFilteredUsers()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -410,7 +418,7 @@ class ChequeViewModel(
                 val response = apiService.getAllTransactions()
                 if (response.isSuccessful) {
                     transactions = response.body() ?: emptyList()
-                    updateFilteredTransactions() // Add this to update filtered list
+                    updateFilteredTransactions()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -424,7 +432,7 @@ class ChequeViewModel(
                 val response = apiService.getAllTransfers()
                 if (response.isSuccessful) {
                     transfers = response.body() ?: emptyList()
-                    updateFilteredTransfers() // Add this to update filtered list
+                    updateFilteredTransfers()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -438,7 +446,7 @@ class ChequeViewModel(
                 val response = apiService.getAllPaymentLinks()
                 if (response.isSuccessful) {
                     paymentLinks = response.body() ?: emptyList()
-                    updateFilteredPaymentLinks() // Add this to update filtered list
+                    updateFilteredPaymentLinks()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -472,12 +480,31 @@ class ChequeViewModel(
         }
     }
 
-    fun fetchActiveCodeCount() {
+    fun fetchRedeemCodeStats() {
         viewModelScope.launch {
             try {
-                val response = apiService.getActiveCodeCount()
-                if (response.isSuccessful) {
-                    activeCodeCount = (response.body() as? Map<*, *>)?.get("activeCodes") as? Int
+                // Fetch active codes
+                val activeResponse = apiService.getActiveCodeCount()
+                if (activeResponse.isSuccessful) {
+                    activeCodeCount = (activeResponse.body() as? Map<*, *>)?.get("activeCodes") as? Int
+                }
+
+                // Fetch total codes
+                val totalResponse = apiService.getTotalCodeCount()
+                if (totalResponse.isSuccessful) {
+                    totalCodeCount = (totalResponse.body() as? Map<*, *>)?.get("totalCodes") as? Int
+                }
+
+                // Fetch inactive codes
+                val inactiveResponse = apiService.getInactiveCodeCount()
+                if (inactiveResponse.isSuccessful) {
+                    inactiveCodeCount = (inactiveResponse.body() as? Map<*, *>)?.get("inactiveCodes") as? Int
+                }
+
+                // Fetch all codes with users
+                val allCodesResponse = apiService.getAllCodesWithUsers()
+                if (allCodesResponse.isSuccessful) {
+                    allCodes = allCodesResponse.body() ?: emptyList()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -491,7 +518,7 @@ class ChequeViewModel(
                 val response = apiService.generateRedeemCode(RedeemRequest(amount))
                 if (response.isSuccessful) {
                     generatedCode = response.body()
-                    fetchActiveCodeCount()
+                    fetchRedeemCodeStats()
                     errorMessage = "Redeem code generated successfully"
                 }
             } catch (e: Exception) {

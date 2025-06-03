@@ -138,8 +138,6 @@ fun AdminTransfersScreen(viewModel: ChequeViewModel, navController: NavControlle
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Transfers Management", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
                 SearchBar(
                     query = viewModel.transferSearchQuery,
                     onQueryChange = { viewModel.updateTransferSearchQuery(it) },
