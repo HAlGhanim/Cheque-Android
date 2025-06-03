@@ -23,47 +23,62 @@ class ChequeViewModel(
 
     var token: TokenResponse? by mutableStateOf(null)
         private set
-
     var chequeAccount: Account? by mutableStateOf(null)
         private set
-
     var transactions: List<TransactionResponse> by mutableStateOf(emptyList())
         private set
-
     var errorMessage: String? by mutableStateOf(null)
         internal set
-
     var user: User? by mutableStateOf(null)
         private set
-
     var name by mutableStateOf("")
     var kycName by mutableStateOf("")
-
     var dashboardStats: DashboardStats? by mutableStateOf(null)
         private set
-
     var users: List<User> by mutableStateOf(emptyList())
         private set
-
     var chequeAccounts: List<Account> by mutableStateOf(emptyList())
         private set
-
     var transfers: List<TransferResponse> by mutableStateOf(emptyList())
         private set
-
     var paymentLinks: List<PaymentLinkResponse> by mutableStateOf(emptyList())
         private set
-
     var kycRecords: List<KYC> by mutableStateOf(emptyList())
         private set
-
     var activeCodeCount: Int? by mutableStateOf(null)
         private set
-
-    var generatedCode: Map<String, Any>? by mutableStateOf(null)
+    var totalCodeCount: Int? by mutableStateOf(null)
         private set
-
+    var inactiveCodeCount: Int? by mutableStateOf(null)
+        private set
+    var allCodes: List<RedeemCodeResponse> by mutableStateOf(emptyList())
+    var generatedCode: Map<String, Any>? by mutableStateOf(null)
+    private set
     var isLoading by mutableStateOf(false)
+        private set
+    var accountSearchQuery by mutableStateOf("")
+        private set
+    var filteredChequeAccounts by mutableStateOf<List<Account>>(emptyList())
+        private set
+    var kycSearchQuery by mutableStateOf("")
+        private set
+    var filteredKycRecords by mutableStateOf<List<KYC>>(emptyList())
+        private set
+    var paymentLinkSearchQuery by mutableStateOf("")
+        private set
+    var filteredPaymentLinks by mutableStateOf<List<PaymentLinkResponse>>(emptyList())
+        private set
+    var transactionSearchQuery by mutableStateOf("")
+        private set
+    var filteredTransactions by mutableStateOf<List<TransactionResponse>>(emptyList())
+        private set
+    var transferSearchQuery by mutableStateOf("")
+        private set
+    var filteredTransfers by mutableStateOf<List<TransferResponse>>(emptyList())
+        private set
+    var userSearchQuery by mutableStateOf("")
+        private set
+    var filteredUsers by mutableStateOf<List<User>>(emptyList())
         private set
 
     var isAccountLoaded by mutableStateOf(false)
@@ -109,12 +124,116 @@ class ChequeViewModel(
         dashboardStats = null
         users = emptyList()
         chequeAccounts = emptyList()
+        filteredChequeAccounts = emptyList()
+        accountSearchQuery = ""
         transfers = emptyList()
         paymentLinks = emptyList()
         kycRecords = emptyList()
         activeCodeCount = null
+        totalCodeCount = null
+        inactiveCodeCount = null
+        allCodes = emptyList()
         generatedCode = null
         errorMessage = null
+    }
+
+    fun updateKycSearchQuery(query: String) {
+        kycSearchQuery = query
+        updateFilteredKycRecords()
+    }
+
+    private fun updateFilteredKycRecords() {
+        filteredKycRecords = kycRecords.filter { kyc ->
+            kycSearchQuery.isEmpty() ||
+                    kyc.id.toString().contains(kycSearchQuery, ignoreCase = true) ||
+                    kyc.name.contains(kycSearchQuery, ignoreCase = true) ||
+                    kyc.phone.contains(kycSearchQuery, ignoreCase = true) ||
+                    kyc.user.email.contains(kycSearchQuery, ignoreCase = true)
+        }
+    }
+
+    fun updateAccountSearchQuery(query: String) {
+        accountSearchQuery = query
+        updateFilteredAccounts()
+    }
+
+    private fun updateFilteredAccounts() {
+        filteredChequeAccounts = chequeAccounts.filter { account ->
+            accountSearchQuery.isEmpty() ||
+                    account.accountNumber.contains(accountSearchQuery, ignoreCase = true) ||
+                    account.userId.toString().contains(accountSearchQuery, ignoreCase = true) ||
+                    account.accountType.contains(accountSearchQuery, ignoreCase = true)
+        }
+        Log.d("ChequeViewModel", "Updated filteredChequeAccounts: $filteredChequeAccounts")
+    }
+
+    fun updatePaymentLinkSearchQuery(query: String) {
+        paymentLinkSearchQuery = query
+        updateFilteredPaymentLinks()
+    }
+
+    private fun updateFilteredPaymentLinks() {
+        filteredPaymentLinks = paymentLinks.filter { link ->
+            paymentLinkSearchQuery.isEmpty() ||
+                    link.id.toString().contains(paymentLinkSearchQuery, ignoreCase = true) ||
+                    link.accountNumber.contains(paymentLinkSearchQuery, ignoreCase = true) ||
+                    link.amount.toString().contains(paymentLinkSearchQuery, ignoreCase = true) ||
+                    (link.description?.contains(paymentLinkSearchQuery, ignoreCase = true) ?: false) ||
+                    link.status.contains(paymentLinkSearchQuery, ignoreCase = true) ||
+                    (link.transactionId?.toString()?.contains(paymentLinkSearchQuery, ignoreCase = true) ?: false) ||
+                    link.uuid.contains(paymentLinkSearchQuery, ignoreCase = true)
+        }
+    }
+
+    fun updateTransactionSearchQuery(query: String) {
+        transactionSearchQuery = query
+        updateFilteredTransactions()
+    }
+
+    private fun updateFilteredTransactions() {
+        filteredTransactions = transactions.filter { transaction ->
+            transactionSearchQuery.isEmpty() ||
+                    transaction.id.toString().contains(transactionSearchQuery, ignoreCase = true) ||
+                    transaction.senderAccountNumber.contains(transactionSearchQuery, ignoreCase = true) ||
+                    transaction.receiverAccountNumber.contains(transactionSearchQuery, ignoreCase = true) ||
+                    transaction.amount.toString().contains(transactionSearchQuery, ignoreCase = true) ||
+                    transaction.createdAt.contains(transactionSearchQuery, ignoreCase = true)
+        }
+    }
+
+    fun updateTransferSearchQuery(query: String) {
+        transferSearchQuery = query
+        updateFilteredTransfers()
+    }
+
+    private fun updateFilteredTransfers() {
+        filteredTransfers = transfers.filter { transfer ->
+            transferSearchQuery.isEmpty() ||
+                    transfer.id.toString().contains(transferSearchQuery, ignoreCase = true) ||
+                    transfer.fromUserId.toString().contains(transferSearchQuery, ignoreCase = true) ||
+                    transfer.toUserId.toString().contains(transferSearchQuery, ignoreCase = true) ||
+                    transfer.senderAccountNumber.contains(transferSearchQuery, ignoreCase = true) ||
+                    transfer.receiverAccountNumber.contains(transferSearchQuery, ignoreCase = true) ||
+                    transfer.amount.toString().contains(transferSearchQuery, ignoreCase = true) ||
+                    transfer.transactionId.toString().contains(transferSearchQuery, ignoreCase = true) ||
+                    (transfer.description?.contains(transferSearchQuery, ignoreCase = true) ?: false) ||
+                    transfer.createdAt.contains(transferSearchQuery, ignoreCase = true)
+        }
+    }
+
+    fun updateUserSearchQuery(query: String) {
+        userSearchQuery = query
+        updateFilteredUsers()
+    }
+
+    private fun updateFilteredUsers() {
+        filteredUsers = users.filter { user ->
+            userSearchQuery.isEmpty() ||
+                    (user.id?.toString()?.contains(userSearchQuery, ignoreCase = true) ?: false) ||
+                    user.email.contains(userSearchQuery, ignoreCase = true) ||
+                    (user.role?.name?.contains(userSearchQuery, ignoreCase = true) ?: false) ||
+                    user.status.contains(userSearchQuery, ignoreCase = true)
+        }
     }
 
     fun login(username: String, password: String) {
@@ -148,8 +267,6 @@ class ChequeViewModel(
             }
         }
     }
-
-
 
     fun registerFullFlow(
         name: String,
@@ -241,6 +358,7 @@ class ChequeViewModel(
                 val response = apiService.getUsers(page, size, role)
                 if (response.isSuccessful) {
                     users = response.body() ?: emptyList()
+                    updateFilteredUsers()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -277,10 +395,16 @@ class ChequeViewModel(
             try {
                 val response = apiService.getAllAccounts()
                 if (response.isSuccessful) {
-                    chequeAccounts = response.body()!!
+                    chequeAccounts = response.body() ?: emptyList()
+                    updateFilteredAccounts()
+                    Log.d("ChequeViewModel", "Fetched accounts: $chequeAccounts")
+                } else {
+                    errorMessage = "API error: ${response.code()}"
+                    Log.e("ChequeViewModel", "Failed to fetch accounts: ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
+                Log.e("ChequeViewModel", "Exception fetching accounts: ${e.message}")
             }
         }
     }
@@ -291,6 +415,7 @@ class ChequeViewModel(
                 val response = apiService.getAllTransactions()
                 if (response.isSuccessful) {
                     transactions = response.body() ?: emptyList()
+                    updateFilteredTransactions()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -304,6 +429,7 @@ class ChequeViewModel(
                 val response = apiService.getAllTransfers()
                 if (response.isSuccessful) {
                     transfers = response.body() ?: emptyList()
+                    updateFilteredTransfers()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -317,6 +443,7 @@ class ChequeViewModel(
                 val response = apiService.getAllPaymentLinks()
                 if (response.isSuccessful) {
                     paymentLinks = response.body() ?: emptyList()
+                    updateFilteredPaymentLinks()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -342,6 +469,7 @@ class ChequeViewModel(
                 val response = apiService.getAllKYC()
                 if (response.isSuccessful) {
                     kycRecords = response.body() ?: emptyList()
+                    updateFilteredKycRecords()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -349,12 +477,31 @@ class ChequeViewModel(
         }
     }
 
-    fun fetchActiveCodeCount() {
+    fun fetchRedeemCodeStats() {
         viewModelScope.launch {
             try {
-                val response = apiService.getActiveCodeCount()
-                if (response.isSuccessful) {
-                    activeCodeCount = (response.body() as? Map<*, *>)?.get("activeCodes") as? Int
+                // Fetch active codes
+                val activeResponse = apiService.getActiveCodeCount()
+                if (activeResponse.isSuccessful) {
+                    activeCodeCount = (activeResponse.body() as? Map<*, *>)?.get("activeCodes") as? Int
+                }
+
+                // Fetch total codes
+                val totalResponse = apiService.getTotalCodeCount()
+                if (totalResponse.isSuccessful) {
+                    totalCodeCount = (totalResponse.body() as? Map<*, *>)?.get("totalCodes") as? Int
+                }
+
+                // Fetch inactive codes
+                val inactiveResponse = apiService.getInactiveCodeCount()
+                if (inactiveResponse.isSuccessful) {
+                    inactiveCodeCount = (inactiveResponse.body() as? Map<*, *>)?.get("inactiveCodes") as? Int
+                }
+
+                // Fetch all codes with users
+                val allCodesResponse = apiService.getAllCodesWithUsers()
+                if (allCodesResponse.isSuccessful) {
+                    allCodes = allCodesResponse.body() ?: emptyList()
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -368,7 +515,7 @@ class ChequeViewModel(
                 val response = apiService.generateRedeemCode(RedeemRequest(amount))
                 if (response.isSuccessful) {
                     generatedCode = response.body()
-                    fetchActiveCodeCount()
+                    fetchRedeemCodeStats()
                     errorMessage = "Redeem code generated successfully"
                 }
             } catch (e: Exception) {
@@ -467,4 +614,4 @@ class ChequeViewModel(
         }
     }
     }
-
+}
