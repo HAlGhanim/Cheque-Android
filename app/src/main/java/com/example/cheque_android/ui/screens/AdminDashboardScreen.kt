@@ -150,8 +150,6 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
                             StatRow("Total Codes", viewModel.totalCodeCount?.toString() ?: "0", R.drawable.card)
                             StatRow("Active Codes", viewModel.activeCodeCount?.toString() ?: "0", R.drawable.card)
                             StatRow("Inactive Codes", viewModel.inactiveCodeCount?.toString() ?: "0", R.drawable.card)
-                            StatRow("Growth Percentage", "${stats.growthPercentage}%", R.drawable.reward)
-                            StatRow("Last Updated", formatDate(stats.lastUpdated), R.drawable.card)
                         }
                     }
                 } ?: run {

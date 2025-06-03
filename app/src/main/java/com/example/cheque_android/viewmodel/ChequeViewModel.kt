@@ -89,6 +89,12 @@ class ChequeViewModel(
 
     var lastUsedLink: PaymentLinkResponse? by mutableStateOf(null)
 
+    var redeemCodeSearchQuery by mutableStateOf("")
+        private set
+
+    var filteredRedeemCodes by mutableStateOf<List<RedeemCodeResponse>>(emptyList())
+        private set
+
 
     init {
         loadStoredToken()
@@ -265,6 +271,22 @@ class ChequeViewModel(
             } finally {
                 isLoading = false
             }
+        }
+    }
+
+    fun updateRedeemCodeSearchQuery(query: String) {
+        redeemCodeSearchQuery = query
+        updateFilteredRedeemCodes()
+    }
+
+    private fun updateFilteredRedeemCodes() {
+        filteredRedeemCodes = allCodes.filter { redeemCode ->
+            redeemCodeSearchQuery.isEmpty() ||
+                    redeemCode.id.toString().contains(redeemCodeSearchQuery, ignoreCase = true) ||
+                    redeemCode.code.contains(redeemCodeSearchQuery, ignoreCase = true) ||
+                    redeemCode.amount.toString().contains(redeemCodeSearchQuery, ignoreCase = true) ||
+                    redeemCode.used.toString().contains(redeemCodeSearchQuery, ignoreCase = true) ||
+                    (redeemCode.userEmail?.contains(redeemCodeSearchQuery, ignoreCase = true) ?: false)
         }
     }
 
@@ -483,25 +505,29 @@ class ChequeViewModel(
                 // Fetch active codes
                 val activeResponse = apiService.getActiveCodeCount()
                 if (activeResponse.isSuccessful) {
-                    activeCodeCount = (activeResponse.body() as? Map<*, *>)?.get("activeCodes") as? Int
+                    val body = activeResponse.body() as? Map<*, *>
+                    activeCodeCount = (body?.get("activeCodes") as? Number)?.toInt()
                 }
 
                 // Fetch total codes
                 val totalResponse = apiService.getTotalCodeCount()
                 if (totalResponse.isSuccessful) {
-                    totalCodeCount = (totalResponse.body() as? Map<*, *>)?.get("totalCodes") as? Int
+                    val body = totalResponse.body() as? Map<*, *>
+                    totalCodeCount = (body?.get("totalCodes") as? Number)?.toInt()
                 }
 
                 // Fetch inactive codes
                 val inactiveResponse = apiService.getInactiveCodeCount()
                 if (inactiveResponse.isSuccessful) {
-                    inactiveCodeCount = (inactiveResponse.body() as? Map<*, *>)?.get("inactiveCodes") as? Int
+                    val body = inactiveResponse.body() as? Map<*, *>
+                    inactiveCodeCount = (body?.get("inactiveCodes") as? Number)?.toInt()
                 }
 
                 // Fetch all codes with users
                 val allCodesResponse = apiService.getAllCodesWithUsers()
                 if (allCodesResponse.isSuccessful) {
                     allCodes = allCodesResponse.body() ?: emptyList()
+                    updateFilteredRedeemCodes() // Add this to update filtered list after fetching
                 }
             } catch (e: Exception) {
                 errorMessage = e.message
