@@ -41,7 +41,7 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
         }
     }
 
-    if (viewModel.isLoading || viewModel.user == null || viewModel.chequeAccount == null) {
+    if (!viewModel.isAccountLoaded || viewModel.user == null) {
         LoadingIndicator()
         return
     }

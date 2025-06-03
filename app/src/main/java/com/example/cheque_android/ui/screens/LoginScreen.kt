@@ -23,14 +23,11 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
     val isLoading = viewModel.isLoading
     val errorMessage = viewModel.errorMessage
     val user = viewModel.user
+    val token = viewModel.token?.token
 
-    LaunchedEffect(viewModel.token?.token, user) {
-        if (!viewModel.token?.token.isNullOrBlank() && user != null) {
-            val route = if (user.role == Role.ADMIN) {
-                Screen.AdminDashboard.route
-            } else {
-                Screen.Home.route
-            }
+    LaunchedEffect(key1 = token, key2 = user, key3 = isLoading) {
+        if (!token.isNullOrBlank() && user != null && !isLoading) {
+            val route = if (user.role == Role.ADMIN) Screen.AdminDashboard.route else Screen.Home.route
             navController.navigate(route) {
                 popUpTo(Screen.Login.route) { inclusive = true }
             }
@@ -39,65 +36,63 @@ fun LoginScreen(viewModel: ChequeViewModel, navController: NavController) {
 
     if (isLoading && user == null) {
         LoadingIndicator()
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Login", style = MaterialTheme.typography.headlineMedium)
-            Spacer(modifier = Modifier.height(24.dp))
+        return
+    }
 
-            errorMessage?.let {
-                Text(
-                    text = it,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Login", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(24.dp))
 
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+        errorMessage?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    viewModel.login(username, password) { route ->
-                        navController.navigate(route) {
-                            popUpTo(Screen.Login.route) { inclusive = true }
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Login")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("Don't have an account? Sign up", modifier = Modifier.clickable {
-                navController.navigate(Screen.Register.route)
-            })
         }
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                viewModel.login(username, password)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Login")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Don't have an account? Sign up", modifier = Modifier.clickable {
+            navController.navigate(Screen.Register.route)
+        })
     }
 }
+
 
