@@ -14,7 +14,7 @@ import com.example.cheque_android.viewmodel.ChequeViewModel
 
 @Composable
 fun TransactionsCard(viewModel: ChequeViewModel, accountNumber: String) {
-    val transactions = viewModel.transactions
+    val transactions = viewModel.transactions.sortedByDescending { it.createdAt }
 
     LaunchedEffect(accountNumber) {
         if (accountNumber.isNotBlank()) {

@@ -81,10 +81,23 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    ActionButton("Generate Link", "↓") { navController.navigate(Screen.GenerateLink.route) }
-                    ActionButton("Redeem", "↑") { navController.navigate(Screen.Redeem.route) }
-                    ActionButton("Pay Link", "📄") { navController.navigate(Screen.PayPaymentLinkScreen.route) }
-                    ActionButton("Transfer", "⚙️") { navController.navigate(Screen.Transfer.route) }
+                    account?.let {
+                        if (it.accountType.equals("MERCHANT", ignoreCase = true)) {
+                            ActionButton("Generate Link", "↓") {
+                                navController.navigate(Screen.GenerateLink.route)
+                            }
+                        }
+                    }
+
+                    ActionButton("Redeem", "↑") {
+                        navController.navigate(Screen.Redeem.route)
+                    }
+                    ActionButton("Pay Link", "📄") {
+                        navController.navigate(Screen.PayPaymentLinkScreen.route)
+                    }
+                    ActionButton("Transfer", "⚙️") {
+                        navController.navigate(Screen.Transfer.route)
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
