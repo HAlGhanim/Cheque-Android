@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -140,7 +141,14 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = acceptTerms, onCheckedChange = { acceptTerms = it })
             Spacer(modifier = Modifier.width(8.dp))
-            Text("I accept Cheque Terms & Conditions and Privacy Policy")
+            Text(
+                text = "I accept Cheque Terms & Conditions and Privacy Policy",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline),
+                modifier = Modifier.clickable{
+                    navController.navigate(Screen.PolicyScreen.route)
+                }
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))

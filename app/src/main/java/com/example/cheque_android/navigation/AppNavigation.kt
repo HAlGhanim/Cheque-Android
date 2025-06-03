@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.cheque_android.navigation.Screen.PolicyScreen
 import com.example.cheque_android.ui.screens.AdminAccountsScreen
 import com.example.cheque_android.ui.screens.AdminDashboardScreen
 import com.example.cheque_android.ui.screens.AdminKYCScreen
@@ -14,6 +15,7 @@ import com.example.cheque_android.ui.screens.AdminTransfersScreen
 import com.example.cheque_android.ui.screens.AdminUsersScreen
 import com.example.cheque_android.ui.screens.HomeScreen
 import com.example.cheque_android.ui.screens.LoginScreen
+import com.example.cheque_android.ui.screens.PolicyScreen
 import com.example.cheque_android.ui.screens.RedeemScreen
 import com.example.cheque_android.ui.screens.TransferPaymentScreen
 import com.example.cheque_android.ui.screens.RegisterScreen
@@ -68,6 +70,9 @@ fun AppNavigation(navController: NavHostController, viewModel: ChequeViewModel) 
         }
         composable(Screen.Redeem.route){
             RedeemScreen(viewModel = viewModel, navController = navController)
+        }
+        composable(Screen.PolicyScreen.route){
+            PolicyScreen(navController = navController)
         }
     }
 }
