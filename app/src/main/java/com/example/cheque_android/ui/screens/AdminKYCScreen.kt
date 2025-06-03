@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,6 +17,8 @@ import com.example.cheque_android.data.dto.KYC
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
+import com.example.cheque_android.ui.composables.SearchBar
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,7 +122,7 @@ fun AdminKYCScreen(viewModel: ChequeViewModel, navController: NavController) {
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Menu,
+                                imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu"
                             )
                         }
@@ -135,6 +138,12 @@ fun AdminKYCScreen(viewModel: ChequeViewModel, navController: NavController) {
             ) {
                 Text("KYC Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
+                SearchBar(
+                    query = viewModel.kycSearchQuery,
+                    onQueryChange = { viewModel.updateKycSearchQuery(it) },
+                    placeholder = "Search by ID, name, phone, or email"
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 viewModel.errorMessage?.let { message ->
                     Text(
                         text = message,
@@ -142,11 +151,11 @@ fun AdminKYCScreen(viewModel: ChequeViewModel, navController: NavController) {
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.kycRecords.isEmpty()) {
+                if (viewModel.filteredKycRecords.isEmpty()) {
                     Text("No KYC records found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.kycRecords) { kyc ->
+                        items(viewModel.filteredKycRecords) { kyc ->
                             KYCCard(kyc)
                         }
                     }

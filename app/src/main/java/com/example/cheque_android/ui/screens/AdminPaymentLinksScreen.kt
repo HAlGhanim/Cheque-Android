@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,12 +18,17 @@ import com.example.cheque_android.data.response.PaymentLinkResponse
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
+import com.example.cheque_android.ui.composables.SearchBar
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminPaymentLinksScreen(viewModel: ChequeViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val paymentLinks by remember { derivedStateOf { viewModel.filteredPaymentLinks } }
+    val error by remember { derivedStateOf { viewModel.errorMessage } }
 
     LaunchedEffect(Unit) {
         viewModel.clearErrorMessage()
@@ -119,7 +126,7 @@ fun AdminPaymentLinksScreen(viewModel: ChequeViewModel, navController: NavContro
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Menu,
+                                imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu"
                             )
                         }
@@ -135,19 +142,25 @@ fun AdminPaymentLinksScreen(viewModel: ChequeViewModel, navController: NavContro
             ) {
                 Text("Payment Links Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
-                viewModel.errorMessage?.let { message ->
+                SearchBar(
+                    query = viewModel.paymentLinkSearchQuery,
+                    onQueryChange = { viewModel.updatePaymentLinkSearchQuery(it) },
+                    placeholder = "Search by ID, account, amount, or UUID"
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                error?.let { message ->
                     Text(
                         text = message,
-                        color = if (message.contains("successfully")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.paymentLinks.isEmpty()) {
+                if (paymentLinks.isEmpty()) {
                     Text("No payment links found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.paymentLinks) { link ->
-                            PaymentLinkCard(link, viewModel)
+                        items(paymentLinks) { link ->
+                            PaymentLinkCard(link, onDelete = { viewModel.deletePaymentLink(it) })
                         }
                     }
                 }
@@ -157,7 +170,7 @@ fun AdminPaymentLinksScreen(viewModel: ChequeViewModel, navController: NavContro
 }
 
 @Composable
-fun PaymentLinkCard(link: PaymentLinkResponse, viewModel: ChequeViewModel) {
+fun PaymentLinkCard(paymentLink: PaymentLinkResponse, onDelete: (Long) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -167,28 +180,28 @@ fun PaymentLinkCard(link: PaymentLinkResponse, viewModel: ChequeViewModel) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.wallet),
-                contentDescription = "Wallet Icon",
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(end = 16.dp)
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                Text("UUID: ${link.uuid}", style = MaterialTheme.typography.bodyLarge)
-                Text("Amount: $${link.amount}", style = MaterialTheme.typography.bodyMedium)
-                Text("Account: ${link.accountNumber}", style = MaterialTheme.typography.bodyMedium)
-                Text("Description: ${link.description}", style = MaterialTheme.typography.bodyMedium)
-                Text("Status: ${link.status}", style = MaterialTheme.typography.bodyMedium)
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = { viewModel.deletePaymentLink(link.id) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Delete")
+            Row {
+                Image(
+                    painter = painterResource(id = R.drawable.wallet),
+                    contentDescription = "Payment Link Icon",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(end = 16.dp)
+                )
+                Column {
+                    Text("ID: ${paymentLink.id}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Account: ${paymentLink.accountNumber}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Amount: $${paymentLink.amount}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Description: ${paymentLink.description ?: "N/A"}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Status: ${paymentLink.status}", style = MaterialTheme.typography.bodyMedium)
+                    Text("UUID: ${paymentLink.uuid}", style = MaterialTheme.typography.bodyMedium)
                 }
+            }
+            IconButton(onClick = { onDelete(paymentLink.id) }) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete")
             }
         }
     }

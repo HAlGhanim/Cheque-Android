@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,7 +15,7 @@ import androidx.navigation.NavController
 import com.example.cheque_android.R
 import com.example.cheque_android.data.response.TransferResponse
 import com.example.cheque_android.navigation.Screen
-import com.example.cheque_android.utils.formatDate
+import com.example.cheque_android.ui.composables.SearchBar
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
@@ -23,6 +24,9 @@ import kotlinx.coroutines.launch
 fun AdminTransfersScreen(viewModel: ChequeViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val transfers by remember { derivedStateOf { viewModel.filteredTransfers } }
+    val error by remember { derivedStateOf { viewModel.errorMessage } }
 
     LaunchedEffect(Unit) {
         viewModel.clearErrorMessage()
@@ -120,7 +124,7 @@ fun AdminTransfersScreen(viewModel: ChequeViewModel, navController: NavControlle
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Menu,
+                                imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu"
                             )
                         }
@@ -136,18 +140,24 @@ fun AdminTransfersScreen(viewModel: ChequeViewModel, navController: NavControlle
             ) {
                 Text("Transfers Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
-                viewModel.errorMessage?.let { message ->
+                SearchBar(
+                    query = viewModel.transferSearchQuery,
+                    onQueryChange = { viewModel.updateTransferSearchQuery(it) },
+                    placeholder = "Search by ID, from/to user, account, or amount"
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                error?.let { message ->
                     Text(
                         text = message,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.transfers.isEmpty()) {
+                if (transfers.isEmpty()) {
                     Text("No transfers found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.transfers) { transfer ->
+                        items(transfers) { transfer ->
                             TransferCard(transfer)
                         }
                     }
@@ -179,11 +189,13 @@ fun TransferCard(transfer: TransferResponse) {
             )
             Column {
                 Text("ID: ${transfer.id}", style = MaterialTheme.typography.bodyLarge)
-                Text("Amount: $${transfer.amount}", style = MaterialTheme.typography.bodyMedium)
+                Text("From User: ${transfer.fromUserId}", style = MaterialTheme.typography.bodyMedium)
+                Text("To User: ${transfer.toUserId}", style = MaterialTheme.typography.bodyMedium)
                 Text("Sender: ${transfer.senderAccountNumber}", style = MaterialTheme.typography.bodyMedium)
                 Text("Receiver: ${transfer.receiverAccountNumber}", style = MaterialTheme.typography.bodyMedium)
+                Text("Amount: $${transfer.amount}", style = MaterialTheme.typography.bodyMedium)
                 Text("Description: ${transfer.description}", style = MaterialTheme.typography.bodyMedium)
-                Text("Created: ${formatDate(transfer.createdAt)}", style = MaterialTheme.typography.bodyMedium)
+                Text("Created: ${transfer.createdAt}", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

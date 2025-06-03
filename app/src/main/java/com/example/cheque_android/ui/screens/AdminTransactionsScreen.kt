@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,7 +15,7 @@ import androidx.navigation.NavController
 import com.example.cheque_android.R
 import com.example.cheque_android.data.response.TransactionResponse
 import com.example.cheque_android.navigation.Screen
-import com.example.cheque_android.utils.formatDate
+import com.example.cheque_android.ui.composables.SearchBar
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
 
@@ -23,6 +24,9 @@ import kotlinx.coroutines.launch
 fun AdminTransactionsScreen(viewModel: ChequeViewModel, navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val transactions by remember { derivedStateOf { viewModel.filteredTransactions } }
+    val error by remember { derivedStateOf { viewModel.errorMessage } }
 
     LaunchedEffect(Unit) {
         viewModel.clearErrorMessage()
@@ -120,7 +124,7 @@ fun AdminTransactionsScreen(viewModel: ChequeViewModel, navController: NavContro
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Menu,
+                                imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu"
                             )
                         }
@@ -136,18 +140,24 @@ fun AdminTransactionsScreen(viewModel: ChequeViewModel, navController: NavContro
             ) {
                 Text("Transactions Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
-                viewModel.errorMessage?.let { message ->
+                SearchBar(
+                    query = viewModel.transactionSearchQuery,
+                    onQueryChange = { viewModel.updateTransactionSearchQuery(it) },
+                    placeholder = "Search by ID, sender, receiver, or amount"
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                error?.let { message ->
                     Text(
                         text = message,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.transactions.isEmpty()) {
+                if (transactions.isEmpty()) {
                     Text("No transactions found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.transactions) { transaction ->
+                        items(transactions) { transaction ->
                             TransactionCard(transaction)
                         }
                     }
@@ -179,10 +189,10 @@ fun TransactionCard(transaction: TransactionResponse) {
             )
             Column {
                 Text("ID: ${transaction.id}", style = MaterialTheme.typography.bodyLarge)
-                Text("Amount: $${transaction.amount}", style = MaterialTheme.typography.bodyMedium)
                 Text("Sender: ${transaction.senderAccountNumber}", style = MaterialTheme.typography.bodyMedium)
                 Text("Receiver: ${transaction.receiverAccountNumber}", style = MaterialTheme.typography.bodyMedium)
-                Text("Created: ${formatDate(transaction.createdAt)}", style = MaterialTheme.typography.bodyMedium)
+                Text("Amount: $${transaction.amount}", style = MaterialTheme.typography.bodyMedium)
+                Text("Created: ${transaction.createdAt}", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

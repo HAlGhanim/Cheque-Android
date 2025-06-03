@@ -3,6 +3,7 @@ package com.example.cheque_android.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,6 +17,7 @@ import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.utils.formatDate
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import kotlinx.coroutines.launch
+import com.example.cheque_android.ui.composables.SearchBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,7 +121,7 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Menu,
+                                imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu"
                             )
                         }
@@ -135,6 +137,12 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
             ) {
                 Text("Accounts Management", style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(16.dp))
+                SearchBar(
+                    query = viewModel.accountSearchQuery,
+                    onQueryChange = { viewModel.updateAccountSearchQuery(it) },
+                    placeholder = "Search by account number, user ID, or type"
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 viewModel.errorMessage?.let { message ->
                     Text(
                         text = message,
@@ -142,11 +150,11 @@ fun AdminAccountsScreen(viewModel: ChequeViewModel, navController: NavController
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                if (viewModel.chequeAccounts.isEmpty()) {
+                if (viewModel.filteredChequeAccounts.isEmpty()) {
                     Text("No accounts found", style = MaterialTheme.typography.bodyLarge)
                 } else {
                     LazyColumn {
-                        items(viewModel.chequeAccounts) { account ->
+                        items(viewModel.filteredChequeAccounts) { account ->
                             AccountCard(account)
                         }
                     }
