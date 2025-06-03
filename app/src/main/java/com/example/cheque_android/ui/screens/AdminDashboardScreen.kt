@@ -1,6 +1,7 @@
 package com.example.cheque_android.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +24,7 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
     LaunchedEffect(Unit) {
         viewModel.clearErrorMessage()
         viewModel.fetchDashboardStats()
+        viewModel.fetchRedeemCodeStats() // Fetch redeem code stats
     }
 
     ModalNavigationDrawer(
@@ -116,7 +118,7 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Menu,
+                                imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu"
                             )
                         }
@@ -130,8 +132,6 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Admin Dashboard", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
                 viewModel.errorMessage?.let { message ->
                     Text(
                         text = message,
@@ -147,6 +147,9 @@ fun AdminDashboardScreen(viewModel: ChequeViewModel, navController: NavControlle
                         Column(modifier = Modifier.padding(30.dp)) {
                             StatRow("Total Users", stats.totalUsers.toString(), R.drawable.idcard)
                             StatRow("Total Transactions", stats.totalTransactions.toString(), R.drawable.bankstatement)
+                            StatRow("Total Codes", viewModel.totalCodeCount?.toString() ?: "0", R.drawable.card)
+                            StatRow("Active Codes", viewModel.activeCodeCount?.toString() ?: "0", R.drawable.card)
+                            StatRow("Inactive Codes", viewModel.inactiveCodeCount?.toString() ?: "0", R.drawable.card)
                             StatRow("Growth Percentage", "${stats.growthPercentage}%", R.drawable.reward)
                             StatRow("Last Updated", formatDate(stats.lastUpdated), R.drawable.card)
                         }
