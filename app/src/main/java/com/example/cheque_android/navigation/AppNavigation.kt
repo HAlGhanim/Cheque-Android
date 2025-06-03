@@ -17,10 +17,12 @@ import com.example.cheque_android.ui.screens.HomeScreen
 import com.example.cheque_android.ui.screens.LoginScreen
 import com.example.cheque_android.ui.screens.PolicyScreen
 import com.example.cheque_android.ui.screens.RedeemScreen
-import com.example.cheque_android.ui.screens.TransferPaymentScreen
+import com.example.cheque_android.ui.screens.GeneratePaymentLinkScreen
+import com.example.cheque_android.ui.screens.PayPaymentLinkScreen
 import com.example.cheque_android.ui.screens.RegisterScreen
 import com.example.cheque_android.ui.screens.SignupFailureScreen
 import com.example.cheque_android.ui.screens.SignupSuccessScreen
+import com.example.cheque_android.ui.screens.TransferScreen
 import com.example.cheque_android.viewmodel.ChequeViewModel
 
 @Composable
@@ -59,8 +61,11 @@ fun AppNavigation(navController: NavHostController, viewModel: ChequeViewModel) 
         composable(Screen.AdminRedeem.route) {
             AdminRedeemScreen(viewModel = viewModel, navController = navController)
         }
-        composable(Screen.Transfer.route) {
-            TransferPaymentScreen(onBack = { navController.popBackStack() })
+        composable(Screen.PayPaymentLinkScreen.route) {
+            PayPaymentLinkScreen(
+                onBack = { navController.popBackStack() },
+                viewModel = viewModel
+            )
         }
         composable(Screen.SignupSuccess.route) {
             SignupSuccessScreen(navController = navController)
@@ -71,8 +76,17 @@ fun AppNavigation(navController: NavHostController, viewModel: ChequeViewModel) 
         composable(Screen.Redeem.route){
             RedeemScreen(viewModel = viewModel, navController = navController)
         }
-        composable(Screen.PolicyScreen.route){
+        composable(PolicyScreen.route){
             PolicyScreen(navController = navController)
+        }
+        composable(Screen.Transfer.route) {
+            TransferScreen(navController = navController, viewModel = viewModel)
+        }
+        composable(Screen.GenerateLink.route) {
+            GeneratePaymentLinkScreen(
+                onBack = { navController.popBackStack() },
+                viewModel = viewModel
+            )
         }
     }
 }

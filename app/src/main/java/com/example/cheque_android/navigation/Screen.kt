@@ -6,14 +6,14 @@ sealed class Screen(val route: String) {
     object Register : Screen("register")
     object SignupSuccess : Screen("signupsuccess")
     object SignupFailureScreen : Screen("signupfailurescreen")
-    object PolicyScreen : Screen("policysrreen")
+    object PolicyScreen : Screen("policy")
 
     // User Screens
     object Home : Screen("home")
-    object Transfer : Screen("transfer")
+    object GenerateLink : Screen("generate_link")
     object Redeem : Screen("redeem")
-    object Details : Screen("details")
-    object More : Screen("more")
+    object Transfer : Screen("Transfer")
+    object PayPaymentLinkScreen : Screen("pay_payment_link")
 
     // Admin Screens
     object AdminDashboard : Screen("admin_dashboard")

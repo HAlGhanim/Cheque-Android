@@ -1,8 +1,10 @@
 package com.example.cheque_android.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,17 +14,27 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import com.example.cheque_android.viewmodel.ChequeViewModel
+import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransferPaymentScreen(onBack: () -> Unit) {
+fun GeneratePaymentLinkScreen(
+    onBack: () -> Unit,
+    viewModel: ChequeViewModel
+) {
     val accountNumber = remember { mutableStateOf("") }
     val amount = remember { mutableStateOf("") }
     val notificationsEnabled = remember { mutableStateOf(false) }
     val expiryOption = remember { mutableStateOf("none") }
     val customDate = remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
 
     Scaffold(
         topBar = {
@@ -42,7 +54,15 @@ fun TransferPaymentScreen(onBack: () -> Unit) {
         },
         bottomBar = {
             Button(
-                onClick = { /* Handle generate link */ },
+                onClick = {
+                    val amountValue = amount.value.toDoubleOrNull()
+                    if (amountValue == null || amountValue <= 0.0) {
+                        viewModel.errorMessage = "Invalid amount"
+                    } else {
+                        val desc = "Manual Payment Link to ${accountNumber.value}"
+                        viewModel.createPaymentLink(amountValue, desc)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -121,11 +141,57 @@ fun TransferPaymentScreen(onBack: () -> Unit) {
                     onCheckedChange = { notificationsEnabled.value = it }
                 )
             }
+
             Text(
                 "Receive notifications when this link is paid",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Error or success message
+            viewModel.errorMessage?.let { message ->
+                Text(
+                    text = message,
+                    color = if (message.contains("success", ignoreCase = true))
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            // Display UUID, Copy & Share if link was created
+            viewModel.lastCreatedLink?.let { link ->
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Generated Link UUID:", style = MaterialTheme.typography.labelMedium)
+                SelectionContainer {
+                    Text(link.uuid, style = MaterialTheme.typography.bodyLarge)
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                    Button(onClick = {
+                        clipboardManager.setText(AnnotatedString(link.uuid))
+                    }) {
+                        Text("Copy")
+                    }
+
+                    Button(onClick = {
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "Payment Link UUID: ${link.uuid}")
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
+                    }) {
+                        Text("Share")
+                    }
+                }
+            }
         }
     }
 }

@@ -134,4 +134,20 @@ interface ChequeApiService {
     @POST("admin/redeem/generate")
     suspend fun generateRedeemCode(@Body request: RedeemRequest): Response<Map<String, Any>>
 
+    @POST("payment-links")
+    suspend fun createPaymentLink(@Body request: PaymentLinkRequest): Response<PaymentLinkResponse>
+
+    @POST("payment-links/use/{uuid}")
+    suspend fun usePaymentLink(
+        @Path("uuid") uuid: String
+    ): PaymentLinkResponse
+
+    @POST("/api/transfer")
+    suspend fun createTransfer(
+        @Body request: TransferRequest
+    ): TransferResponse
+
+    @GET("/api/transfer/my")
+    suspend fun getMyTransfers(): List<TransferResponse>
+
 }

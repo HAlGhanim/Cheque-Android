@@ -84,6 +84,11 @@ class ChequeViewModel(
     var isAccountLoaded by mutableStateOf(false)
         private set
 
+    var lastCreatedLink: PaymentLinkResponse? by mutableStateOf(null)
+        private set
+
+    var lastUsedLink: PaymentLinkResponse? by mutableStateOf(null)
+
 
     init {
         loadStoredToken()
@@ -559,5 +564,54 @@ class ChequeViewModel(
                 Log.e("ChequeViewModel", "Failed to get transactions: ${e.message}")
             }
         }
+    }
+    fun createPaymentLink(amount: Double, description: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.createPaymentLink(PaymentLinkRequest(amount, description))
+                if (response.isSuccessful) {
+                    lastCreatedLink = response.body()
+                    fetchPaymentLinks()
+                    errorMessage = "Payment link created successfully"
+                } else {
+                    errorMessage = "Failed to create payment link"
+                }
+            } catch (e: Exception) {
+                errorMessage = "Exception: ${e.localizedMessage}"
+            }
+        }
+    }
+        fun usePaymentLink(uuid: String) {
+            viewModelScope.launch {
+                try {
+                    val response = apiService.usePaymentLink(uuid)
+                    lastUsedLink = response
+                    errorMessage = "Payment successful"
+                } catch (e: Exception) {
+                    errorMessage = e.message ?: "Failed to use payment link"
+                }
+            }
+        }
+    fun createTransfer(request: TransferRequest, onSuccess: (TransferResponse) -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.createTransfer(request)
+                onSuccess(response)
+            } catch (e: Exception) {
+                onError("Transfer failed: ${e.message}")
+            }
+        }
+    }
+
+    fun loadMyTransfers(onResult: (List<TransferResponse>) -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val transfers = apiService.getMyTransfers()
+                onResult(transfers)
+            } catch (e: Exception) {
+                onError("Failed to fetch transfers: ${e.message}")
+            }
+        }
+    }
     }
 }
