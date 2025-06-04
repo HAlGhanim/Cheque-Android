@@ -1,12 +1,16 @@
 package com.example.cheque_android.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cheque_android.data.request.TransferRequest
@@ -24,12 +28,18 @@ fun TransferScreen(
     var description by remember { mutableStateOf("") }
     var message by remember { mutableStateOf<String?>(null) }
 
+    val backgroundColor = Color(0xFF292F38)
+    val textColor = Color.White
+    val buttonColor  = Color(0xFF2ED2C0)
+
     Scaffold(
+        containerColor = backgroundColor,
         topBar = {
             TopAppBar(
                 title = { Text("Transfer Funds") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(colors = IconButtonDefaults.iconButtonColors(contentColor = buttonColor )
+                            ,onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -44,11 +54,29 @@ fun TransferScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Image(
+                painter = painterResource(com.example.cheque_android.R.drawable.chequecoloredlogo),
+                contentDescription = "Cheque Logo",
+                modifier = Modifier
+                    .size(50.dp)
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+
             OutlinedTextField(
                 value = receiverAccount,
                 onValueChange = { receiverAccount = it },
                 label = { Text("Receiver Account Number") },
-                modifier = Modifier.fillMaxWidth()
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedContainerColor = Color(0xFFF5F4FA),
+                    unfocusedContainerColor = Color(0xFFF5F4FA),
+                    cursorColor = Color.Black,
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray
+                )
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -58,7 +86,17 @@ fun TransferScreen(
                 onValueChange = { amount = it },
                 label = { Text("Amount") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedContainerColor = Color(0xFFF5F4FA),
+                    unfocusedContainerColor = Color(0xFFF5F4FA),
+                    cursorColor = Color.Black,
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray
+                )
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -66,13 +104,24 @@ fun TransferScreen(
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
+                shape = RoundedCornerShape(16.dp),
                 label = { Text("Description") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedContainerColor = Color(0xFFF5F4FA),
+                    unfocusedContainerColor = Color(0xFFF5F4FA),
+                    cursorColor = Color.Black,
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray
+                )
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 onClick = {
                     try {
                         val transferRequest = TransferRequest(
@@ -96,7 +145,7 @@ fun TransferScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Send Transfer")
+                Text("Send Transfer", color = textColor)
             }
 
             message?.let {

@@ -1,9 +1,9 @@
 package com.example.cheque_android.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +26,10 @@ import com.example.cheque_android.viewmodel.ChequeViewModel
 
 @Composable
 fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
+    val backgroundColor = Color(0xFF292F38)
+    val textColor = Color.White
+    val buttonColor  = Color(0xFF2ED2C0)
+
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -38,11 +42,12 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(backgroundColor)
             .padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Create Account", fontWeight = FontWeight.Bold, fontSize = 35.sp, color = Color(0xFF384BAB))
+    ){
+        Text("Create Account", fontWeight = FontWeight.Bold, fontSize = 35.sp, color = textColor)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -51,7 +56,17 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
             onValueChange = { fullName = it },
             label = { Text("Name") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)         )
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.White,
+                unfocusedBorderColor = Color.LightGray,
+                focusedContainerColor = Color(0xFFF5F4FA),
+                unfocusedContainerColor = Color(0xFFF5F4FA),
+                cursorColor = Color.Black,
+                focusedPlaceholderColor = Color.Gray,
+                unfocusedPlaceholderColor = Color.Gray
+            )
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -60,7 +75,17 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
             onValueChange = { email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)         )
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.White,
+                unfocusedBorderColor = Color.LightGray,
+                focusedContainerColor = Color(0xFFF5F4FA),
+                unfocusedContainerColor = Color(0xFFF5F4FA),
+                cursorColor = Color.Black,
+                focusedPlaceholderColor = Color.Gray,
+                unfocusedPlaceholderColor = Color.Gray
+            )
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -70,7 +95,17 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)         )
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.White,
+                unfocusedBorderColor = Color.LightGray,
+                focusedContainerColor = Color(0xFFF5F4FA),
+                unfocusedContainerColor = Color(0xFFF5F4FA),
+                cursorColor = Color.Black,
+                focusedPlaceholderColor = Color.Gray,
+                unfocusedPlaceholderColor = Color.Gray
+            )
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -79,13 +114,24 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
             onValueChange = { number = it },
             label = { Text("Phone Number") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)         )
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.White,
+                unfocusedBorderColor = Color.LightGray,
+                focusedContainerColor = Color(0xFFF5F4FA),
+                unfocusedContainerColor = Color(0xFFF5F4FA),
+                cursorColor = Color.Black,
+                focusedPlaceholderColor = Color.LightGray,
+                unfocusedPlaceholderColor = Color.LightGray
+            )
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Who are you?", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color(0xFF384BAB))
+        Text("Who are you?", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = textColor)
 
         Spacer(modifier = Modifier.height(16.dp))
+
         LazyRow(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -95,8 +141,7 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
                     painter = painterResource(R.drawable.merchant),
                     contentDescription = "Merchant",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(75.dp)
+                    modifier = Modifier.size(75.dp)
                 )
             }
             item { Spacer(modifier = Modifier.height(24.dp)) }
@@ -116,14 +161,12 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            item { Spacer(modifier = Modifier.height(24.dp)) }
             item {
                 Image(
                     painter = painterResource(R.drawable.customer),
                     contentDescription = "Customer",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(75.dp)
+                    modifier = Modifier.size(75.dp)
                 )
             }
 
@@ -136,16 +179,20 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
                 ) { selectedRole = it }
             }
         }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = acceptTerms, onCheckedChange = { acceptTerms = it })
+            Checkbox(checked = acceptTerms, onCheckedChange = { acceptTerms = it },     colors = CheckboxDefaults.colors(
+                checkedColor = buttonColor
+            )
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "I accept Cheque Terms & Conditions and Privacy Policy",
-                color = MaterialTheme.colorScheme.primary,
+                color = textColor,
                 style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline),
-                modifier = Modifier.clickable{
+                modifier = Modifier.clickable {
                     navController.navigate(Screen.PolicyScreen.route)
                 }
             )
@@ -153,7 +200,8 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        val allValid = fullName.isNotBlank() && email.isNotBlank() && password.isNotBlank() && acceptTerms && selectedRole.isNotBlank() && number.isNotBlank()
+        val allValid = fullName.isNotBlank() && email.isNotBlank() && password.isNotBlank() &&
+                acceptTerms && selectedRole.isNotBlank() && number.isNotBlank()
 
         if (errorMessage != null) {
             Text(errorMessage!!, color = MaterialTheme.colorScheme.error)
@@ -171,24 +219,30 @@ fun RegisterScreen(viewModel: ChequeViewModel, navController: NavController) {
                     role = selectedRole,
                     onSuccess = {
                         isLoading = false
-                        navController.navigate(Screen.SignupSuccess.route)                    },
+                        navController.navigate(Screen.SignupSuccess.route)
+                    },
                     onError = {
-                        isLoading = true
+                        isLoading = false
                         errorMessage = it
                     }
                 )
             },
             enabled = allValid && !isLoading,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
         ) {
-            Text(if (isLoading) "Signing up..." else "Sign up")
+            Text(if (isLoading) "Signing up..." else "Sign up", color = textColor)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Already have an account? Sign in", modifier = Modifier.clickable {
-            navController.popBackStack()
-        })
+        Text(
+            "Already have an account? Sign in",
+            color = textColor,
+            modifier = Modifier.clickable {
+                navController.navigate(Screen.Login.route)
+            }
+        )
     }
 }
 
@@ -206,12 +260,15 @@ fun RoleOption(roleValue: String, title: String, subtitle: String, selected: Str
     ) {
         RadioButton(
             selected = selected == roleValue,
-            onClick = null // handled by Row
+            colors = RadioButtonDefaults.colors(
+                selectedColor = Color(0xFF2DD4C0) // اللون اللي تبيه
+            ),
+            onClick = null
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
-            Text(text = title, style = MaterialTheme.typography.titleMedium)
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall)
+            Text(text = title, style = MaterialTheme.typography.titleMedium, color = Color.White)
+            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
         }
     }
 }

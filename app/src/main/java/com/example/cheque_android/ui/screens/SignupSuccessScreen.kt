@@ -1,5 +1,6 @@
 package com.example.cheque_android.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -17,31 +18,33 @@ import com.example.cheque_android.navigation.Screen
 
 @Composable
 fun SignupSuccessScreen(navController: NavController) {
+    val backgroundColor = Color(0xFF292F38)
+    val textColor = Color.White
+    val buttonColor  = Color(0xFF2ED2C0)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             imageVector = Icons.Default.CheckCircle,
             contentDescription = "Success",
-            tint = Color(0xFF4CAF50),
+            tint = buttonColor,
             modifier = Modifier.size(80.dp)
         )
         Spacer(modifier = Modifier.height(40.dp))
-        Text("You have created a new account", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 25.sp, color = Color(
-            0xFF000000
-        )
+        Text("You have created a new account", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 25.sp, color = textColor
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Button(modifier = Modifier.fillMaxWidth(), onClick = {
+        Button(modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = buttonColor), onClick = {
             navController.navigate(Screen.Login.route) {
                 popUpTo(Screen.Register.route) { inclusive = true }
             }
         }) {
-            Text("Go to Login")
+            Text("Go to Login", color = textColor, textAlign = TextAlign.Center)
         }
     }
 }

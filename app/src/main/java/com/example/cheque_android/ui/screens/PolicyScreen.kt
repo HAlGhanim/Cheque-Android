@@ -1,5 +1,7 @@
 package com.example.cheque_android.ui.screens
 
+import android.R
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -7,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -14,18 +17,21 @@ import com.example.cheque_android.navigation.Screen
 
 @Composable
 fun PolicyScreen(navController: NavController) {
+    val backgroundColor = Color(0xFF292F38)
+    val textColor = Color.White
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
+            .background(backgroundColor)
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        ) {
         Text(
             text = "Terms and Conditions",
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = textColor
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -44,12 +50,16 @@ fun PolicyScreen(navController: NavController) {
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(top = 12.dp)
+                modifier = Modifier.padding(top = 12.dp),
+                color = textColor
+
             )
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 4.dp),
+                color = textColor
+
             )
         }
 
@@ -57,7 +67,8 @@ fun PolicyScreen(navController: NavController) {
 
         Button(
             onClick = { navController.navigate(Screen.Register.route) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2ED2C0))
         ) {
             Text("Back")
         }

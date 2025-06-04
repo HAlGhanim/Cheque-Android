@@ -56,14 +56,12 @@ fun BankCardSection(
             modifier = Modifier
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color(0xFF1E3A8A), Color(0xFF3B82F6))
+                        listOf(Color(0xFF187C6D), Color(0xFF2DD4C0))
                     )
                 )
                 .padding(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                Text("🏦 BANK", style = MaterialTheme.typography.labelLarge, color = Color.White)
-
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
@@ -92,7 +90,7 @@ fun BankCardSection(
                     }
 
                     Image(
-                        painter = painterResource(id = R.drawable.chip),
+                        painter = painterResource(id = R.drawable.chequenocoloredlogo),
                         contentDescription = "Chip Icon",
                         modifier = Modifier
                             .size(36.dp)

@@ -1,13 +1,17 @@
 package com.example.cheque_android.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.cheque_android.navigation.Screen
 import com.example.cheque_android.ui.composables.ActionButton
@@ -15,12 +19,19 @@ import com.example.cheque_android.ui.composables.BankCardSection
 import com.example.cheque_android.ui.composables.LoadingIndicator
 import com.example.cheque_android.ui.composables.SheetTransactionsContent
 import com.example.cheque_android.ui.composables.TransactionsCard
+import com.example.cheque_android.ui.composables.TypingText
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
+
+    val backgroundColor = Color(0xFF292F38)
+    val textColor = Color.White
+    val buttonColor  = Color(0xFF2ED2C0)
+
+
     val account = viewModel.chequeAccount
     val transactions by remember { derivedStateOf { viewModel.transactions } }
 
@@ -55,15 +66,12 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
+                .background(backgroundColor)
                 .padding(padding)
                 .padding(16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    "Hello ${viewModel.kycName}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.Black
-                )
+                TypingText("Welcome back ${viewModel.kycName}!", speed = 60L)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -83,23 +91,57 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
                 ) {
                     account?.let {
                         if (it.accountType.equals("MERCHANT", ignoreCase = true)) {
-                            ActionButton("Generate Link", "↓") {
+                            ActionButton("Generate Link", icon = {
+                                Image(
+                                    painter = painterResource(com.example.cheque_android.R.drawable.requestlink),
+                                    contentDescription = "Generatelink",
+                                    modifier = Modifier
+                                        .size(150.dp)
+                                )
+                            }) {
                                 navController.navigate(Screen.GenerateLink.route)
                             }
                         }
                     }
 
-                    ActionButton("Redeem", "↑") {
+                    ActionButton("Redeem", icon = {
+                        Image(
+                            painter = painterResource(com.example.cheque_android.R.drawable.redeem),
+                            contentDescription = "Redeem",
+                            modifier = Modifier
+                                .size(150.dp)
+                        )
+                    }) {
                         navController.navigate(Screen.Redeem.route)
                     }
-                    ActionButton("Pay Link", "📄") {
+                    ActionButton("Pay Link", icon = {
+                        Image(
+                            painter = painterResource(com.example.cheque_android.R.drawable.paylink),
+                            contentDescription = "Paylink",
+                            modifier = Modifier
+                                .size(150.dp)
+                        )
+                    }) {
                         navController.navigate(Screen.PayPaymentLinkScreen.route)
                     }
-                    ActionButton("Transfer", "⚙️") {
+                    ActionButton("Transfer", icon = {
+                        Image(
+                            painter = painterResource(com.example.cheque_android.R.drawable.transaction),
+                            contentDescription = "Transfer",
+                            modifier = Modifier
+                                .size(150.dp)
+                        )
+                    }) {
                         navController.navigate(Screen.Transfer.route)
                     }
                 }
 
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Divider(
+                    color = Color.White,
+                    thickness = 1.dp
+                )
                 Spacer(modifier = Modifier.height(24.dp))
 
                 TransactionsCard(viewModel, account?.accountNumber ?: "")
@@ -108,7 +150,7 @@ fun HomeScreen(viewModel: ChequeViewModel, navController: NavController) {
             FilledTonalButton(
                 onClick = { showLogoutDialog = true },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color(0xFFEF4444))
+                colors = ButtonDefaults.filledTonalButtonColors(containerColor = buttonColor)
             ) {
                 Text("Logout", color = Color.White)
             }
