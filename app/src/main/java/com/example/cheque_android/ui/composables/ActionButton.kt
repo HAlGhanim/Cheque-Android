@@ -18,21 +18,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ActionButton(label: String, icon: String, onClick: () -> Unit) {
+fun ActionButton(label: String, icon: @Composable () -> Unit, onClick: () -> Unit) {
+
+    val textColor = Color.White
+    val buttonColor  = Color(0xFF2ED2C0)
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = Color(0xFFE0E7FF),
+            color = buttonColor,
             modifier = Modifier
                 .size(60.dp)
                 .clickable { onClick() },
             shadowElevation = 4.dp
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Text(icon, style = MaterialTheme.typography.titleLarge, color = Color(0xFF1E3A8A))
+                icon()
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Black)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = textColor)
     }
 }

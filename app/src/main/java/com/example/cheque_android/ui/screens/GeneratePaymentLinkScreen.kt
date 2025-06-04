@@ -1,9 +1,11 @@
 package com.example.cheque_android.ui.screens
 
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -19,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import com.example.cheque_android.viewmodel.ChequeViewModel
 import java.math.BigDecimal
 
@@ -31,30 +34,31 @@ fun GeneratePaymentLinkScreen(
     val accountNumber = remember { mutableStateOf("") }
     val amount = remember { mutableStateOf("") }
     val notificationsEnabled = remember { mutableStateOf(false) }
-    val expiryOption = remember { mutableStateOf("none") }
-    val customDate = remember { mutableStateOf("") }
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
 
+
+    val backgroundColor = Color(0xFF292F38)
+    val textColor = Color.White
+    val buttonColor = Color(0xFF2ED2C0)
+
     Scaffold(
+        containerColor = backgroundColor,
         topBar = {
             TopAppBar(
                 title = { Text("New Payment Link") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(colors = IconButtonDefaults.iconButtonColors(contentColor = buttonColor),
+                        onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
-                actions = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
-                    }
-                }
             )
         },
         bottomBar = {
             Button(
-                onClick = {
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
+                        onClick = {
                     val amountValue = amount.value.toDoubleOrNull()
                     if (amountValue == null || amountValue <= 0.0) {
                         viewModel.errorMessage = "Invalid amount"
@@ -67,16 +71,27 @@ fun GeneratePaymentLinkScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Generate Payment Link")
+                Text("Generate Payment Link", color = textColor)
             }
         }
     ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Image(
+                painter = painterResource(com.example.cheque_android.R.drawable.chequecoloredlogo),
+                contentDescription = "Cheque Logo",
+                modifier = Modifier
+                    .size(50.dp)
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+
             OutlinedTextField(
                 value = accountNumber.value,
                 onValueChange = { accountNumber.value = it },
@@ -85,7 +100,17 @@ fun GeneratePaymentLinkScreen(
                 trailingIcon = {
                     Icon(Icons.Default.Person, contentDescription = null)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedContainerColor = Color(0xFFF5F4FA),
+                    unfocusedContainerColor = Color(0xFFF5F4FA),
+                    cursorColor = Color.Black,
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -95,38 +120,21 @@ fun GeneratePaymentLinkScreen(
                 onValueChange = { amount.value = it },
                 label = { Text("Amount (KWD)") },
                 placeholder = { Text("0.000") },
+                shape = RoundedCornerShape(16.dp),
                 trailingIcon = {
                     Text("KWD", style = MaterialTheme.typography.bodySmall)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedContainerColor = Color(0xFFF5F4FA),
+                    unfocusedContainerColor = Color(0xFFF5F4FA),
+                    cursorColor = Color.Black,
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray
+                )
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("Link Expiry", style = MaterialTheme.typography.bodySmall)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = expiryOption.value == "none",
-                    onClick = { expiryOption.value = "none" }
-                )
-                Text("No Expiry", modifier = Modifier.clickable { expiryOption.value = "none" })
-                Spacer(modifier = Modifier.width(16.dp))
-                RadioButton(
-                    selected = expiryOption.value == "custom",
-                    onClick = { expiryOption.value = "custom" }
-                )
-                Text("Custom", modifier = Modifier.clickable { expiryOption.value = "custom" })
-            }
-
-            if (expiryOption.value == "custom") {
-                OutlinedTextField(
-                    value = customDate.value,
-                    onValueChange = { customDate.value = it },
-                    label = { Text("Custom Expiry Date") },
-                    placeholder = { Text("yyyy-mm-dd") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -135,10 +143,16 @@ fun GeneratePaymentLinkScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Payment Notifications")
+                Text("Payment Notifications", color = textColor)
                 Switch(
                     checked = notificationsEnabled.value,
-                    onCheckedChange = { notificationsEnabled.value = it }
+                    onCheckedChange = { notificationsEnabled.value = it },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = buttonColor,
+                        checkedTrackColor = buttonColor.copy(alpha = 0.5f),
+                        uncheckedThumbColor = Color.Gray,
+                        uncheckedTrackColor = Color.LightGray
+                    )
                 )
             }
 
@@ -155,7 +169,7 @@ fun GeneratePaymentLinkScreen(
                 Text(
                     text = message,
                     color = if (message.contains("success", ignoreCase = true))
-                        MaterialTheme.colorScheme.primary
+                        buttonColor
                     else
                         MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
@@ -165,21 +179,25 @@ fun GeneratePaymentLinkScreen(
             // Display UUID, Copy & Share if link was created
             viewModel.lastCreatedLink?.let { link ->
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Generated Link UUID:", style = MaterialTheme.typography.labelMedium)
+                Text("Generated Link UUID:", style = MaterialTheme.typography.labelMedium, color = textColor)
                 SelectionContainer {
-                    Text(link.uuid, style = MaterialTheme.typography.bodyLarge)
+                    Text(link.uuid, style = MaterialTheme.typography.bodyLarge,color = textColor)
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(25.dp))
 
                 Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
                     Button(onClick = {
                         clipboardManager.setText(AnnotatedString(link.uuid))
-                    }) {
-                        Text("Copy")
+                    },
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+                    ) {
+                        Text("Copy", color = textColor)
                     }
 
-                    Button(onClick = {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+                            ,onClick = {
                         val sendIntent = Intent().apply {
                             action = Intent.ACTION_SEND
                             putExtra(Intent.EXTRA_TEXT, "Payment Link UUID: ${link.uuid}")
@@ -188,7 +206,7 @@ fun GeneratePaymentLinkScreen(
                         val shareIntent = Intent.createChooser(sendIntent, null)
                         context.startActivity(shareIntent)
                     }) {
-                        Text("Share")
+                        Text("Share", color = textColor)
                     }
                 }
             }
